@@ -15,5 +15,5 @@ OTEL_EXPORTER_OTLP_LOGS_PROTOCOL=http/protobuf \
 OTEL_LOGS_EXPORTER=otlp \
 OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=https://logs.us-east-1.amazonaws.com/v1/logs 
 
-COPY target/spring-ai-agent-demo-0.0.1-SNAPSHOT.jar app.jar
+COPY target/spring-ai-1.1-agent-demo-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
