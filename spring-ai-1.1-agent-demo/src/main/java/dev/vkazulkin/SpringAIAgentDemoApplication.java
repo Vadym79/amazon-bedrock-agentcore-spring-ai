@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Bean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
-public class SpringMcpConferenceSearchApplication {
+public class SpringAIAgentDemoApplication {
 
 	public static void main(String[] args) {
-			SpringApplication.run(SpringMcpConferenceSearchApplication.class, args);
+			SpringApplication.run(SpringAIAgentDemoApplication.class, args);
 	}
 	
 	@Bean
