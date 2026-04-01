@@ -47,7 +47,7 @@ public class ConferenceSearchTool {
 		return foundConferences;
 	}
 	
-	@Tool(name = "Conference_Search_Tool_By_Topic_And_Date_And_Call_For_Papers_Open_On_The_Given_Date", description = "Search for the conference list for exactly one topic provided, conference dates and the call for papers still open on the given date")
+	@Tool(name = "Conference_Search_Tool_By_Topic_Date_And_CFP_Open_On_Given_Date", description = "Search for the conference list for exactly one topic provided, conference dates and the call for papers still open on the given date")
 	public Set<Conference> search(@ToolParam(description = "conference topic") String topic,
 			@ToolParam(description = " the conference earliest start date") LocalDate earliestStartDate,
 			@ToolParam(description = " the conference latest start date") LocalDate latestStartDate,
