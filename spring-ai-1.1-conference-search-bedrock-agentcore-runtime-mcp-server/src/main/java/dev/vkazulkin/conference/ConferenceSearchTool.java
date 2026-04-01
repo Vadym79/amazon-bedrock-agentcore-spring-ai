@@ -60,7 +60,7 @@ public class ConferenceSearchTool {
 		
 		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
 				.filter(c -> c.startDate().isAfter(earliestStartDate) && c.startDate().isBefore(latestStartDate))
-				.filter(c -> c.callForPaperStartDate().isBefore(callForPapersStillOpenOnThisDate) && c.callForPaperEndDate().isAfter(callForPapersStillOpenOnThisDate))
+				.filter(c -> c.callForPapersStartDate().isBefore(callForPapersStillOpenOnThisDate) && c.callForPapersEndDate().isAfter(callForPapersStillOpenOnThisDate))
 				.collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
@@ -88,7 +88,7 @@ public class ConferenceSearchTool {
 			return objectMapper.readValue(inputStream, Conferences.class);
 		} 
 		catch(IOException ex) {
-			throw new RuntimeException("can't read conferences");
+			throw new RuntimeException("can't read conferences: ",ex);
 		}
 	}
 }
