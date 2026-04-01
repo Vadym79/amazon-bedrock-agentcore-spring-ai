@@ -1,6 +1,9 @@
 package dev.vkazulkin.agent.controller;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +13,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
+import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,13 +22,20 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dev.vkazulkin.agent.tools.DateTimeTools;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.WebClientStreamableHttpTransport;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import reactor.core.publisher.Flux;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolsRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientDescription;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 
@@ -63,8 +74,9 @@ public class SpringAIAgentController {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
-		var options = ToolCallingChatOptions.builder().model("amazon.nova-lite-v1:0")
-				// .model("amazon.nova-pro-v1:0")
+		var options = ToolCallingChatOptions.builder()
+				 //.model("amazon.nova-lite-v1:0")
+				 .model("amazon.nova-pro-v1:0")
 				// .model("anthropic.claude-3-5-sonnet-20240620-v1:0")
 				.maxTokens(2000).build();
 
@@ -102,7 +114,10 @@ public class SpringAIAgentController {
 				logger.info("tool found " + tool);
 			}       
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
-			return this.chatClient.prompt().user(prompt).toolCallbacks(syncMcpToolCallbackProvider.getToolCallbacks())
+			
+			var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
+
+			return this.chatClient.prompt().user(prompt).toolCallbacks(toolCallbacks)
 					.call().content();
 		}
 	}
@@ -137,11 +152,26 @@ public class SpringAIAgentController {
 				 */
 				.build();
 
+		var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 		var content = this.chatClient.prompt().user(prompt)
-				.toolCallbacks(asyncMcpToolCallbackProvider.getToolCallbacks()).stream().content();
+				.toolCallbacks(toolCallbacks).stream().content();
 
 		// client.close();
 		return content;
+	}
+	
+	
+	/**
+	 * concatenate 2 arrays of the same type T
+	 * 
+	 * @param <T>
+	 * @param array1
+	 * @param array2
+	 * @return array containing the elements of the both arrays
+	 */
+	private static <T> T[] concatWithStream(T[] array1, T[] array2) {
+	    return Stream.concat(Arrays.stream(array1), Arrays.stream(array2))
+	      .toArray(size -> (T[]) Array.newInstance(array1.getClass().getComponentType(), size));
 	}
 
 	/**
@@ -157,7 +187,7 @@ public class SpringAIAgentController {
 		logger.info("MCP URL: " + AGENTCORE_RUNTIME_MCP_URL);
 		String headerValue = "Bearer " + token;
 		var webClientBuilder = WebClient.builder()
-				.defaultHeader("Authorization", headerValue)
+				 .defaultHeader("Authorization", headerValue)
 				.defaultHeader("accept","application/json, text/event-stream")
 		        .defaultHeader("Content-Type","application/json");
 		return WebClientStreamableHttpTransport
