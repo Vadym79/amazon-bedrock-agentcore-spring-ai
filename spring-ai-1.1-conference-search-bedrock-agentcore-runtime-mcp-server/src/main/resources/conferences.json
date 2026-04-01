@@ -3,13 +3,13 @@
 	"id" : 1,
     "name" : "JCON Europe",
     "topics" : [ "Java", "JVM", "AI", "Spring", "Cloud" ],
-    "homepage" : "https://2026.europe.jcon.one/",
+    "homepage" : "https://europe.jcon.one/",
     "startDate" : [ 2027, 4, 20 ],
     "endDate" : [ 2027, 4, 23 ],
 	"callForPapersStartDate" : [ 2026, 4, 1 ],
-	"callForPapersEndDate" : [ 2027, 1, 30 ],
+	"callForPapersEndDate" : [ 200000000000027, 1, 30 ],
     "city" : "Cologne",
-    "linkToCallforPapers" : "https://2026.europe.jcon.one/cfp"
+    "linkToCallforPapers" : "https://europe.jcon.one/cfp"
   }, {
 	"id" : 2,
     "name" : "Voxxed Days Belgium",
