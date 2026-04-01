@@ -40,7 +40,8 @@ public class ConferenceSearchTool {
 		logger.info("latest start date "+latestStartDate);
 		
 		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
-				.filter(c -> c.startDate().isAfter(earliestStartDate) && c.startDate().isBefore(latestStartDate))
+				.filter(c -> (c.startDate().isAfter(earliestStartDate) || c.startDate().isEqual(earliestStartDate))
+						&& (c.startDate().isBefore(latestStartDate) || c.startDate().isEqual(latestStartDate)))
 				.collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
@@ -59,8 +60,10 @@ public class ConferenceSearchTool {
 		logger.info("call for papers still open on date "+callForPapersStillOpenOnThisDate);
 		
 		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
-				.filter(c -> c.startDate().isAfter(earliestStartDate) && c.startDate().isBefore(latestStartDate))
-				.filter(c -> c.callForPapersStartDate().isBefore(callForPapersStillOpenOnThisDate) && c.callForPapersEndDate().isAfter(callForPapersStillOpenOnThisDate))
+				.filter(c -> (c.startDate().isAfter(earliestStartDate) || c.startDate().isEqual(earliestStartDate))
+						&& (c.startDate().isBefore(latestStartDate) || c.startDate().isEqual(latestStartDate)))
+			     .filter(c -> (c.callForPapersStartDate().isBefore(callForPapersStillOpenOnThisDate) || c.callForPapersStartDate().isEqual(callForPapersStillOpenOnThisDate)) 
+			    		 && (c.callForPapersEndDate().isAfter(callForPapersStillOpenOnThisDate) || c.callForPapersEndDate().isEqual(callForPapersStillOpenOnThisDate)))
 				.collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
