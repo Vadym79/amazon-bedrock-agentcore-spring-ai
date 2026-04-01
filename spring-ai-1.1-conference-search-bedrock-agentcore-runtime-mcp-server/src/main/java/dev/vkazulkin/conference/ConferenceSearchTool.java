@@ -46,6 +46,26 @@ public class ConferenceSearchTool {
 		logger.info("return list of conferences: " + foundConferences);
 		return foundConferences;
 	}
+	
+	@Tool(name = "Conference_Search_Tool_By_Topic_And_Date_And_Call_For_Papers_Open_On_The_Given_Date", description = "Search for the conference list for exactly one topic provided, conference dates and the call for papers still open on the given date")
+	public Set<Conference> search(@ToolParam(description = "conference topic") String topic,
+			@ToolParam(description = " the conference earliest start date") LocalDate earliestStartDate,
+			@ToolParam(description = " the conference latest start date") LocalDate latestStartDate,
+			@ToolParam(description = " the call for papers still open on this date") LocalDate callForPapersStillOpenOnThisDate) {
+		
+		logger.info("search topic "+topic);
+		logger.info("earliest start date "+earliestStartDate);
+		logger.info("latest start date "+latestStartDate);
+		logger.info("call for papers still open on date "+callForPapersStillOpenOnThisDate);
+		
+		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
+				.filter(c -> c.startDate().isAfter(earliestStartDate) && c.startDate().isBefore(latestStartDate))
+				.filter(c -> c.callForPaperStartDate().isBefore(callForPapersStillOpenOnThisDate) && c.callForPaperEndDate().isAfter(callForPapersStillOpenOnThisDate))
+				.collect(Collectors.toSet());
+
+		logger.info("return list of conferences: " + foundConferences);
+		return foundConferences;
+	}
 
 	@Tool(name = "Conference_Search_Tool_By_Topic", description = "Search for the conference list for exactly one topic provided")
 	public Set<Conference> search(@ToolParam(description = "conference topic") String topic) {
