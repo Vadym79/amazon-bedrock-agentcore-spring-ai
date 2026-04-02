@@ -50,9 +50,13 @@ public class SpringAIAgentController {
 	@Value("${cognito.user.pool.name}")
 	private String USER_POOL_NAME;
 
+	
 	@Value("${cognito.user.pool.client.name}")
 	private String USER_POOL_CLIENT_NAME;
 
+	@Value("${amazon.bedrock.agentcore.gateway.url}")
+	private String AGENTCORE_GATEWAY_URL;
+	
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
 
@@ -61,6 +65,7 @@ public class SpringAIAgentController {
 
 	@Value("${aws.account.id}")
 	private String AWS_ACCOUNT_ID;
+	
 	
 	@Value("${secrets.manager.secret.name}")
 	private String SECRET_NAME;
@@ -181,10 +186,9 @@ public class SpringAIAgentController {
 	 * @return streamable http mcp client transport
 	 */
 	private McpClientTransport getMcpClientTransport(String token) {
-		String AGENTCORE_RUNTIME_MCP_URL = "https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/"
-				+ AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + AWS_ACCOUNT_ID;
-
-		logger.info("MCP URL: " + AGENTCORE_RUNTIME_MCP_URL);
+		
+		var MCP_SERVER_ENDPOINT= this.getMCPServerEndpoint();
+		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
 		String headerValue = "Bearer " + token;
 		var webClientBuilder = WebClient.builder()
 				 .defaultHeader("Authorization", headerValue)
@@ -192,9 +196,21 @@ public class SpringAIAgentController {
 		        .defaultHeader("Content-Type","application/json");
 		return WebClientStreamableHttpTransport
 				.builder(webClientBuilder)
-				.endpoint(AGENTCORE_RUNTIME_MCP_URL).build();
+				.endpoint(MCP_SERVER_ENDPOINT).build();
 	}
 
+	
+	private String getMCPServerEndpoint() {
+		if(AGENTCORE_RUNTIME_ID.length()!=0) {
+			return "https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/"
+			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + AWS_ACCOUNT_ID;
+		} else if (AGENTCORE_GATEWAY_URL.length() !=0) {
+			return AGENTCORE_GATEWAY_URL;
+		}
+		else throw new RuntimeException(" no AgentCore Runtime Id or AgentCore Gateway URL defined");
+	}
+	
+	
 	/**
 	 * returns authorization token required by the mcp client
 	 * 
