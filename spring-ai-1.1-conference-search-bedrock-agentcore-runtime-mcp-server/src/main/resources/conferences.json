@@ -7,7 +7,7 @@
     "startDate" : [ 2027, 4, 20 ],
     "endDate" : [ 2027, 4, 23 ],
 	"callForPapersStartDate" : [ 2026, 4, 1 ],
-	"callForPapersEndDate" : [ 200000000000027, 1, 30 ],
+	"callForPapersEndDate" : [ 2027, 1, 30 ],
     "city" : "Cologne",
     "linkToCallforPapers" : "https://europe.jcon.one/cfp"
   }, {
