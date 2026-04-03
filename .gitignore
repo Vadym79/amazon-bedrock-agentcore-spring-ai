@@ -1,5 +1,6 @@
 *.iml
 **/target
+**/cdk.out
 .vscode
 **/.idea
 **/samconfig.toml
