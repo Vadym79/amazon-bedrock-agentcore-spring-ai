@@ -1,10 +1,17 @@
 package dev.vkazulkin.agent.controller;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -20,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.vkazulkin.agent.tools.DateTimeTools;
@@ -31,10 +39,12 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolsRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientDescription;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -49,10 +59,12 @@ public class SpringAIAgentController {
 
 	@Value("${cognito.user.pool.name}")
 	private String USER_POOL_NAME;
-
 	
 	@Value("${cognito.user.pool.client.name}")
 	private String USER_POOL_CLIENT_NAME;
+	
+	@Value("${cognito.auth.token.resource.server.id}")
+	private String RESOURCE_SERVER_ID;
 
 	@Value("${amazon.bedrock.agentcore.gateway.url}")
 	private String AGENTCORE_GATEWAY_URL;
@@ -65,7 +77,6 @@ public class SpringAIAgentController {
 
 	@Value("${aws.account.id}")
 	private String AWS_ACCOUNT_ID;
-	
 	
 	@Value("${secrets.manager.secret.name}")
 	private String SECRET_NAME;
@@ -110,8 +121,10 @@ public class SpringAIAgentController {
 	 */
 	@GetMapping(value = "/conference-search-sync", consumes = "text/plain")
 	public String conferenceSearchSync(@RequestParam String prompt) {
+		
 		logger.info("invocations endpoint with prompt: " + prompt);
-		String token = getAuthToken();
+		//String token = getAuthTokenViaCognitoClient();
+		String token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
 			var toolsResult = client.listTools();
@@ -137,7 +150,8 @@ public class SpringAIAgentController {
 	public Flux<String> conferenceSearch(@RequestParam String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
 
-		String token = getAuthToken();
+		//String token = getAuthTokenViaCognitoClient();
+		String token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
@@ -211,12 +225,60 @@ public class SpringAIAgentController {
 	}
 	
 	
+	
+	/**
+	 * returns authorization token required by the mcp client
+	 * @return authorization token
+	 */
+	private String getAuthTokenViaHttpClient() {
+		var userPool = getUserPool();
+		logger.info("user pool " + userPool);
+		if(userPool == null) {
+			throw new RuntimeException("cognito user pool with the name "+USER_POOL_NAME+ " is not found");
+		}
+		var userPoolClient = getUserPoolClient(userPool);
+		logger.info("user pool " + userPoolClient);
+		
+		if(userPoolClient == null) {
+			throw new RuntimeException("cognito user pool client with the name "+USER_POOL_CLIENT_NAME+ " is not found");
+		}
+
+		var userPoolClientType = describeUserPoolClient(userPoolClient);
+		logger.info("user pool client type " + userPoolClientType);
+		
+		if(userPoolClientType == null) {
+			throw new RuntimeException("cognito user client type for the client "+USER_POOL_CLIENT_NAME+ " is not found");
+		}
+		var userPoolId = userPool.id();
+		userPoolId = userPoolId.replace("_", "").toLowerCase();
+		var url = "https://" + userPoolId + ".auth." + Region.US_EAST_1.id() + ".amazoncognito.com/oauth2/token";
+		logger.info("url: " + url);
+
+		String SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
+		
+		String entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
+				+ "client_secret=" + userPoolClientType.clientSecret() + "&" + "scope=" + SCOPE_STRING;
+
+		logger.info("entity " + entity);
+		try (var httpClient = HttpClients.createDefault()) {
+			var httpPost = ClassicRequestBuilder.post(url)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded").setEntity(entity).build();
+			return httpClient.execute(httpPost, new AuthTokenResponseHandler());
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("error occured with the message: ", e.getMessage());
+		}
+		return null;
+	}
+
+	
 	/**
 	 * returns authorization token required by the mcp client
 	 * 
 	 * @return authorization token
 	 */
-	private String getAuthToken() {
+	private String getAuthTokenViaCognitoClient() {
 		var userPool = getUserPool();
 		logger.info("user pool " + userPool);
 		if (userPool == null) {
@@ -318,6 +380,39 @@ public class SpringAIAgentController {
 		return null;
 	}
 
+	
+
+	/** returns cognito user pool client type for the given cognito user pool client
+	 * 
+	 * @param userPoolClient- cognito user pool client
+	 * @return cognito user pool client type for the given cognito user pool client
+	 */
+	private static UserPoolClientType describeUserPoolClient(UserPoolClientDescription userPoolClient) {
+		var request = DescribeUserPoolClientRequest.builder()
+				.userPoolId(userPoolClient.userPoolId()).clientId(userPoolClient.clientId()).build();
+		var response = cognitoClient.describeUserPoolClient(request);
+		var optionalType = response.getValueForField("UserPoolClient",
+				UserPoolClientType.class);
+		if(optionalType.isEmpty()) {
+			return null;
+		}
+		return optionalType.get();
+	}
+	
 	private record Credentials(String username, String password) {
+	}
+	
+	private class AuthTokenResponseHandler implements HttpClientResponseHandler<String> {
+		@Override
+		public String handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
+			var inputStream = response.getEntity().getContent();
+			var responseString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+			logger.info("response: " + responseString);
+
+			var responseMap = objectMapper.readValue(responseString, new TypeReference<Map<String, Object>>() {});
+			var token = (String) responseMap.get("access_token");
+			logger.info("token : " + token);
+			return token;
+		}
 	}
 }
