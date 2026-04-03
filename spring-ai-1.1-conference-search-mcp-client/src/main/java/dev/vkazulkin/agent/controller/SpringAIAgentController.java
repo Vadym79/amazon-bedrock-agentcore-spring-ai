@@ -48,6 +48,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolCli
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import software.amazon.awssdk.services.sts.StsClient;
 
 
 @RestController
@@ -74,9 +75,6 @@ public class SpringAIAgentController {
 
 	@Value("${aws.region}")
 	private String AWS_REGION;
-
-	@Value("${aws.account.id}")
-	private String AWS_ACCOUNT_ID;
 	
 	@Value("${secrets.manager.secret.name}")
 	private String SECRET_NAME;
@@ -217,13 +215,20 @@ public class SpringAIAgentController {
 	private String getMCPServerEndpoint() {
 		if(AGENTCORE_RUNTIME_ID.length()!=0) {
 			return "https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/"
-			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + AWS_ACCOUNT_ID;
+			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAcocuntId();
 		} else if (AGENTCORE_GATEWAY_URL.length() !=0) {
 			return AGENTCORE_GATEWAY_URL;
 		}
 		else throw new RuntimeException(" no AgentCore Runtime Id or AgentCore Gateway URL defined");
 	}
 	
+	
+	private String getAcocuntId() {
+	    var stsClient = StsClient.builder().build();
+	    var awsAccountId= stsClient.getCallerIdentity().account();
+	    logger.info("AWS Account Id "+awsAccountId);
+	    return awsAccountId;
+	}
 	
 	
 	/**
