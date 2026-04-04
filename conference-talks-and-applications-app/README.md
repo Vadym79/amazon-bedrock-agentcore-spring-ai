@@ -3,6 +3,8 @@
 mvn clean package
 
 ## Deploy your application with AWS SAM  
+
+```
 sam deploy -g --region us-east-1 
 ```
 
