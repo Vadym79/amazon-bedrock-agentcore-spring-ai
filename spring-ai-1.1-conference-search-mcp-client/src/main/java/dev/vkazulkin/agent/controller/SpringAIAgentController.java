@@ -81,6 +81,9 @@ public class SpringAIAgentController {
 
 	private static final CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.builder()
 			.region(Region.US_EAST_1).build();
+	
+	private static final StsClient stsClient = StsClient.builder().region(Region.US_EAST_1).build();
+	  
 
 	// Create a Secrets Manager client
 	private static final SecretsManagerClient client = SecretsManagerClient.builder().region(Region.US_EAST_1).build();
@@ -215,7 +218,7 @@ public class SpringAIAgentController {
 	private String getMCPServerEndpoint() {
 		if(AGENTCORE_RUNTIME_ID.length()!=0) {
 			return "https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/"
-			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAcocuntId();
+			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAccountId();
 		} else if (AGENTCORE_GATEWAY_URL.length() !=0) {
 			return AGENTCORE_GATEWAY_URL;
 		}
@@ -223,8 +226,7 @@ public class SpringAIAgentController {
 	}
 	
 	
-	private String getAcocuntId() {
-	    var stsClient = StsClient.builder().build();
+	private String getAccountId() {
 	    var awsAccountId= stsClient.getCallerIdentity().account();
 	    logger.info("AWS Account Id "+awsAccountId);
 	    return awsAccountId;
