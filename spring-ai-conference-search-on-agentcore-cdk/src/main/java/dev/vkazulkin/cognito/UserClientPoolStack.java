@@ -1,4 +1,4 @@
-package dev.vkazulkin.agentcore.runtime;
+package dev.vkazulkin.cognito;
 
 
 import java.util.List;
@@ -7,10 +7,6 @@ import dev.vkazulkin.ConventionalDefaults;
 import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.bedrock.agentcore.alpha.AgentRuntimeArtifact;
-import software.amazon.awscdk.services.bedrock.agentcore.alpha.ProtocolType;
-import software.amazon.awscdk.services.bedrock.agentcore.alpha.Runtime;
-import software.amazon.awscdk.services.bedrock.agentcore.alpha.RuntimeAuthorizerConfiguration;
 import software.amazon.awscdk.services.cognito.AuthFlow;
 import software.amazon.awscdk.services.cognito.CognitoDomainOptions;
 import software.amazon.awscdk.services.cognito.OAuthFlows;
@@ -21,22 +17,15 @@ import software.amazon.awscdk.services.cognito.UserPool;
 import software.amazon.awscdk.services.cognito.UserPoolClient;
 import software.amazon.awscdk.services.cognito.UserPoolDomainOptions;
 import software.amazon.awscdk.services.cognito.UserPoolResourceServerOptions;
-import software.amazon.awscdk.services.iam.IRole;
-import software.amazon.awscdk.services.iam.Role;
 import software.constructs.Construct;
 
-public class AgentCoreRuntimeWithMCPStack extends Stack {
+public class UserClientPoolStack extends Stack {
 	
 	public static String COGNITO_DISCOVERY_URL;
-	
 	public static UserPoolClient userPoolClient;
-	
-	public static IRole role;
-	
-	public static Runtime runtime;
 
-    public AgentCoreRuntimeWithMCPStack(Construct scope, String appName,  StackProps stackProps) {
-    	var id=ConventionalDefaults.stackName(appName, "runtime-with-mcp-server");
+    public UserClientPoolStack(Construct scope, String appName,  StackProps stackProps) {
+    	var id=ConventionalDefaults.stackName(appName, "user-client-pool");
         super(scope, id, stackProps);   
         System.out.println(" stack id "+id);
         var poolName= "UserPoolForAgentCoreMCP";
@@ -66,12 +55,7 @@ public class AgentCoreRuntimeWithMCPStack extends Stack {
            .cognitoDomain(CognitoDomainOptions.builder()
         		   .domainPrefix(userPoolId.replace("_", "").toLowerCase()).build()).build());
         */
-        
-        var cognitoDomainPrefix=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("cognitoDomainPrefix"),awsAccountId);
-        userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
-                .cognitoDomain(CognitoDomainOptions.builder()
-             	     .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase()).build()).build());
-        
+              
                 
         COGNITO_DISCOVERY_URL = "https://cognito-idp."+region+".amazonaws.com/"+userPoolId+"/.well-known/openid-configuration";
               
@@ -86,34 +70,19 @@ public class AgentCoreRuntimeWithMCPStack extends Stack {
         				 .scopes(List.of(OAuthScope.resourceServer(userServer, fullAccessScope)))
         				 .build())
         		.userPoolClientName("UserPoolClientWithUserAndPasswordForAgentCoreMCP")
-        		.generateSecret(true)
-        		
+        		.generateSecret(true)		
         		.userPool(userPool).build();
         
-      
-        var ecrImageURI=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("ecrImageURIForConferenceSearchAppAsMCPServer"), awsAccountId);
-        var roleArnForTheAgentCoreRuntime=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("roleArnForTheAgentCoreRuntime"), awsAccountId);
-       
-        // The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
-        var agentRuntimeArtifact = AgentRuntimeArtifact.fromImageUri(ecrImageURI);
-        role= Role.fromRoleArn(this,"roleArnForTheAgentCoreRuntimeRole", roleArnForTheAgentCoreRuntime);
-     
-        // Create runtime using the built image
-        runtime = Runtime.Builder.create(this, "MCPRuntime-123")
-                .runtimeName(appName.replace("-", "_")+ "_runtime")
-                .authorizerConfiguration(RuntimeAuthorizerConfiguration.usingJWT(COGNITO_DISCOVERY_URL, List.of(userPoolClient.getUserPoolClientId()), null))
-                .description("AgenCore Runtime with MCP protocol for running conference search app")
-                .protocolConfiguration(ProtocolType.MCP)
-                .agentRuntimeArtifact(agentRuntimeArtifact)
-                .executionRole(role)
-                .build();
         
-        CfnOutput.Builder.create(this, "RuntimeIdOutput").value(runtime.getAgentRuntimeId()).build();   
+        var cognitoDomainPrefix=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("cognitoDomainPrefix"),awsAccountId);
+        userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
+                .cognitoDomain(CognitoDomainOptions.builder()
+             	     .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase()).build()).build());
+  
+        
         CfnOutput.Builder.create(this, "CognitoUserPoolIdOutput").value(userPoolId).build();
-     
         CfnOutput.Builder.create(this, "CognitoUserPoolClientIdOutput").value(userPoolClient.getUserPoolClientId()).build();
         CfnOutput.Builder.create(this, "CognitoUserPoolClientSecretOutput").value(userPoolClient.getUserPoolClientSecret().toString()).build();
         CfnOutput.Builder.create(this, "CognitoDiscoveryURLOutput").value(COGNITO_DISCOVERY_URL).build();
-         
-     }  
+    }  
 }

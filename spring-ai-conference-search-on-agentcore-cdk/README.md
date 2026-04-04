@@ -12,7 +12,10 @@ configure the properties in cdk.json which march our environment
 # all stacks
 mvn clean package && cdk deploy -c awsAccountId={YOUR_AWS_ACCOUINT_ID} --all
 
-# available stacks names are: spring-ai-conference-search-agentcore-runtime-with-mcp-server-stack , spring-ai-conference-search-agentcore-gateway-with-mcp-server-target-stack
+# available stacks names are: 
+spring-ai-conference-search-agentcore-user-client-pool-stack
+spring-ai-conference-search-agentcore-runtime-with-mcp-server-stack 
+spring-ai-conference-search-agentcore-gateway-with-mcp-server-target-stack
 
 mvn clean package && cdk deploy {STACK_NAME} -c awsAccountId={YOUR_AWS_ACCOUINT_ID}
  
