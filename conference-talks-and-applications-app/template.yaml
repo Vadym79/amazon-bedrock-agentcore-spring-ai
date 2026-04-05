@@ -139,4 +139,4 @@ Resources:
 Outputs:
   ConferenceTalksAndApplicationsAppAPIEndpoint:
     Description: "API Gateway endpoint URL for Prod stage for Conference Talks And Applications App"
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/conference"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"

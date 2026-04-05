@@ -3,8 +3,6 @@
 
 package software.amazonaws.example.conference.handler;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +10,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -29,7 +26,8 @@ public class CreateConferenceApplications implements RequestHandler<APIGatewayPr
 			try {
 				var requestBody = requestEvent.getBody();
 				logger.info("request body: "+requestBody);
-				var conferenceApplications = objectMapper.readValue(requestBody, new TypeReference<List<ConferenceApplication>>(){});
+				//var conferenceApplications = objectMapper.readValue(requestBody, new TypeReference<List<ConferenceApplication>>(){});
+				var conferenceApplications = objectMapper.readValue(requestBody, ConferenceApplication.class);
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.CREATED)
 						.withBody("application = " + conferenceApplications + " created");
 			} catch (Exception e) {
