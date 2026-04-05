@@ -10,7 +10,7 @@ configure the properties in cdk.json which march our environment
 
 ```bash
 # all stacks
-mvn clean package && cdk deploy -c awsAccountId={YOUR_AWS_ACCOUINT_ID} --all
+mvn clean package && cdk deploy -c awsAccountId={YOUR_AWS_ACCOUINT_ID} -c restApiId={YOUR_AMAZON_GATEWAY_REST_API_ID} --all
 
 # available stacks names are: 
 spring-ai-conference-search-agentcore-user-client-pool-stack
