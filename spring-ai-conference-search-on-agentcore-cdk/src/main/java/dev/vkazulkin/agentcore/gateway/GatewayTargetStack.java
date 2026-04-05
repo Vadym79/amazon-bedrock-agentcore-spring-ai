@@ -91,7 +91,7 @@ public class GatewayTargetStack extends Stack {
     		   .credentialLocation(ApiKeyCredentialLocation
     				   .header(ApiKeyAdditionalConfiguration.builder()
     				   .credentialParameterName("x-api-key")
-    				   //.credentialPrefix("")
+    				   .credentialPrefix(" ")
     				   .build()))
     		   .build()));
        
@@ -112,13 +112,13 @@ public class GatewayTargetStack extends Stack {
         	                       .method(ApiGatewayHttpMethod.POST)
         	                       .name("apply-to-conferences-w-conference-id-talk-id")
         	                       .path("/apply")
-        	                       .description("apply to the conference with conference Id and talk Id. Request body should consist of json array of one or many objects containing conferenceId and talkId")
+        	                       .description("apply to the conference with conference Id and talk Id")
         	                       .build(), 
         	                 ApiGatewayToolOverride.builder()
         	                       .method(ApiGatewayHttpMethod.GET)
-        	                       .name("get-talks-by-talk-title-substring")
+        	                       .name("get-talks-by-title-substring")
         	                       .path("/talks/{titleSubstring}")
-        	                       .description("get application talk by talk title substring")
+        	                       .description("get application talk by its title substring.")
         	                       .build()))
         	                 .build())
            .restApi(RestApi.fromRestApiId(this, "APIGATEWAY-ID", restApiId)).stage(restApiStageName).build()))
