@@ -8,6 +8,15 @@ import dev.vkazulkin.cognito.UserClientPoolStack;
 import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.apigateway.RestApi;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiGatewayHttpMethod;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiGatewayTargetConfiguration;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiGatewayToolConfiguration;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiGatewayToolFilter;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiGatewayToolOverride;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiKeyAdditionalConfiguration;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiKeyCredentialLocation;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ApiKeyCredentialProviderProps;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.CustomJwtAuthorizer;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.Gateway;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.GatewayCredentialProvider;
@@ -16,9 +25,9 @@ import software.amazon.awscdk.services.bedrock.agentcore.alpha.McpServerTargetCo
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.OAuthConfiguration;
 import software.constructs.Construct;
 
-public class GatewayWithMCPTargetStack extends Stack {
+public class GatewayTargetStack extends Stack {
 
-    public GatewayWithMCPTargetStack(Construct scope, String appName,  StackProps stackProps) {
+    public GatewayTargetStack(Construct scope, String appName,  StackProps stackProps) {
     	var id=ConventionalDefaults.stackName(appName, "gateway-with-mcp-server-target");
         super(scope, id, stackProps);
         System.out.println(" stack id "+id);
@@ -41,25 +50,83 @@ public class GatewayWithMCPTargetStack extends Stack {
         
        // currently no support for CreateOauth2CredentialProvider even in the 
        // CloudFormation, see the issue https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/2391
-       var providerArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("agentcoreIdentityOutboundOAuthArn"),awsAccountId);
-       var secretArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("secretArn"),awsAccountId);
+       var oAuthProviderArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("agentcoreIdentityOutboundOAuthArn"),awsAccountId);
+       var oAuthSecretArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("oAuthSecretArn"),awsAccountId);
                       
-       var credentialProviderConfigs = List.of(GatewayCredentialProvider.fromOauthIdentityArn(OAuthConfiguration.builder()
-        				                  .providerArn(providerArn)
-        				                  .secretArn(secretArn)
-        				                  .scopes(List.of())
-        				                  .build()));
-          		       
+       var oauthCredentialProviderConfigs = List.of(GatewayCredentialProvider
+    		       .fromOauthIdentityArn(OAuthConfiguration.builder()
+                  .providerArn(oAuthProviderArn)
+                  .secretArn(oAuthSecretArn)
+                  .scopes(List.of())
+                  .build()));
+      		       
        GatewayTarget.Builder.create(this, "MCP-Target-123")
            .targetConfiguration(McpServerTargetConfiguration.create(endpoint))         
-           .credentialProviderConfigurations(credentialProviderConfigs)
+           .credentialProviderConfigurations(oauthCredentialProviderConfigs)
            .gatewayTargetName("mcp-target")
+           .description("AgentCore Runtime MCP Server Target ")
            .gateway(gateway)
            .build();
        
-        //GatewayTarget.Builder.create(this, "MCP-Target-123")
-       //.targetConfiguration((ApiGatewayTargetConfiguration.Builder.create()
-    	//	   .restApi(null).build()));
+       
+       var restApiId=(String)this.getNode().tryGetContext("restApiId");
+       
+       if(restApiId == null || restApiId.trim().isEmpty()) {
+       	System.out.println("please provide your rest api id as as content to the call, for example: cdk deploy -c restApiId=ouklgti");
+       }
+       
+       
+       // currently no support for CreateAPIKeyCredentialProvider even in the 
+       // CloudFormation, see the issue https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/2391
+       var apiKeyProviderArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("agentcoreIdentityOutboundApiKeyArn"),awsAccountId);
+       var apiKeySecretArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("apiKeySecretArn"),awsAccountId);
+       
+       var restApiStageName=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("restApiStageName"),awsAccountId);
+   
+        
+       var apiKeyProviderConfigs = List.of(GatewayCredentialProvider
+    		   .fromApiKeyIdentityArn(ApiKeyCredentialProviderProps.builder()
+    		   .providerArn(apiKeyProviderArn)
+    		   .secretArn(apiKeySecretArn)
+    		   .credentialLocation(ApiKeyCredentialLocation
+    				   .header(ApiKeyAdditionalConfiguration.builder()
+    				   .credentialParameterName("x-api-key")
+    				   //.credentialPrefix("")
+    				   .build()))
+    		   .build()));
+       
+       GatewayTarget.Builder.create(this, "APIGATEWAY-Target-123")
+           .targetConfiguration((ApiGatewayTargetConfiguration.Builder.create()
+        		.apiGatewayToolConfiguration(ApiGatewayToolConfiguration.builder()
+        			.toolFilters(List.of(
+        					ApiGatewayToolFilter.builder()
+        						.filterPath("/talks/{titleSubstring}")
+        						.methods(List.of(ApiGatewayHttpMethod.GET))
+        						.build(),
+        					ApiGatewayToolFilter.builder()
+        						.filterPath("/apply")
+        						.methods(List.of(ApiGatewayHttpMethod.POST))
+        						.build()))
+                 	.toolOverrides(List.of(
+                 			ApiGatewayToolOverride.builder()
+        	                       .method(ApiGatewayHttpMethod.POST)
+        	                       .name("apply-to-conferences-w-conference-id-talk-id")
+        	                       .path("/apply")
+        	                       .description("apply to the conference with conference Id and talk Id. Request body should consist of json array of one or many objects containing conferenceId and talkId")
+        	                       .build(), 
+        	                 ApiGatewayToolOverride.builder()
+        	                       .method(ApiGatewayHttpMethod.GET)
+        	                       .name("get-talks-by-talk-title-substring")
+        	                       .path("/talks/{titleSubstring}")
+        	                       .description("get application talk by talk title substring")
+        	                       .build()))
+        	                 .build())
+           .restApi(RestApi.fromRestApiId(this, "APIGATEWAY-ID", restApiId)).stage(restApiStageName).build()))
+           .credentialProviderConfigurations(apiKeyProviderConfigs)
+           .gatewayTargetName("apigateway-target")
+           .description("Amazon ApiGateway Target ")
+           .gateway(gateway)
+           .build();
           
        CfnOutput.Builder.create(this, "GatewayMCPURLOutput").value(gateway.getGatewayUrl()).build();       
     }

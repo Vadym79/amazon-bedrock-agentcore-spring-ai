@@ -5,6 +5,9 @@
 	  "roleArnForTheAgentCoreRuntime": "arn:aws:iam::{AWS_ACCOUNT_ID}:role/service-role/AmazonBedrockAgentCoreRuntimeDefaultServiceRole-q8xp1",
 	  "cognitoDomainPrefix":"us-east-1_JbjQPT5GJ",
 	  "agentcoreIdentityOutboundOAuthArn": "arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:token-vault/default/oauth2credentialprovider/resource-provider-oauth-gateway",
-	  "secretArn": "arn:aws:secretsmanager:us-east-1:{AWS_ACCOUNT_ID}:secret:bedrock-agentcore-identity!default/oauth2/resource-provider-oauth-gateway-ba3b089d-toYfaV"
+	  "oAuthSecretArn": "arn:aws:secretsmanager:us-east-1:{AWS_ACCOUNT_ID}:secret:bedrock-agentcore-identity!default/oauth2/resource-provider-oauth-gateway-ba3b089d-toYfaV",
+	  "agentcoreIdentityOutboundApiKeyArn": "arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:token-vault/default/apikeycredentialprovider/resource-provider-api-key-gateway",
+	  "apiKeySecretArn": "arn:aws:secretsmanager:us-east-1:{AWS_ACCOUNT_ID}:secret:bedrock-agentcore-identity!default/apikey/resource-provider-api-key-gateway-02d581b0-L9scmD",
+	  "restApiStageName": "prod"
    }
 }

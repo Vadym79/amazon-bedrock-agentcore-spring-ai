@@ -1,6 +1,6 @@
 package dev.vkazulkin;
 
-import dev.vkazulkin.agentcore.gateway.GatewayWithMCPTargetStack;
+import dev.vkazulkin.agentcore.gateway.GatewayTargetStack;
 import dev.vkazulkin.agentcore.runtime.RuntimeWithMCPStack;
 import dev.vkazulkin.cognito.UserClientPoolStack;
 import software.amazon.awscdk.App;
@@ -16,7 +16,7 @@ public interface CDKApp {
         var app = new App();
         new UserClientPoolStack(app, appName, stackProperties());
         new RuntimeWithMCPStack(app, appName, stackProperties());
-        new GatewayWithMCPTargetStack(app, appName, stackProperties());
+        new GatewayTargetStack(app, appName, stackProperties());
         app.synth();  
     }
     
