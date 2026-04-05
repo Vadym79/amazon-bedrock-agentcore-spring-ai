@@ -12,17 +12,8 @@ sam deploy -g --region us-east-1
 
 ## Sample request body to create conference applications:  
 
- [ 
-	{
-	"conferenceId" : 1,
-	"talkId" : 1
-	}, {
-	"conferenceId" : 2,
-	"talkId" : 1
-	},
-	{
-	"conferenceId" : 2,
-	"talkId" : 2
-	} 
- ] 
-
+ 
+{
+ "conferenceId" : 1,
+ "talkId" : 1
+}
