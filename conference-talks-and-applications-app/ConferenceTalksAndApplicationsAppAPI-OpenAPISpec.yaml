@@ -4,7 +4,7 @@ info:
   description: "API for Conference Talks And Applications App"
   version: "1.0"
 servers:
-- url: "https://0ynqpsckol.execute-api.us-east-1.amazonaws.com/{basePath}"
+- url: "https://blabla.execute-api.us-east-1.amazonaws.com/{basePath}"
   variables:
     basePath:
       default: "prod"
