@@ -16,10 +16,10 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazonaws.example.conference.entity.ConferenceApplication;
 
 
-public class CreateConferenceApplications implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class CreateConferenceApplication implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private static final Logger logger = LoggerFactory.getLogger(CreateConferenceApplications.class);
+	private static final Logger logger = LoggerFactory.getLogger(CreateConferenceApplication.class);
 
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {	

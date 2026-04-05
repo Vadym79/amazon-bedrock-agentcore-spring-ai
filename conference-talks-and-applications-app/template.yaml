@@ -31,6 +31,11 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Stage
+      DefinitionBody:
+          Fn::Transform:
+             Name: AWS::Include
+             Parameters:
+               Location: ConferenceTalksAndApplicationsAppAPI-OpenAPISpec.yaml
       #TracingEnabled: true
       Name: ConferenceTalksAndApplicationsAppAPI
       Description: API for Conference Talks And Applications App
@@ -93,12 +98,12 @@ Resources:
         UsagePlanId: !Ref MyApiUsagePlan
 
 
-  CreateConferenceApplicationsFunction:
+  CreateConferenceApplicationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: CreateConferenceApplications
+      FunctionName: CreateConferenceApplication
       AutoPublishAlias: liveVersion 
-      Handler: software.amazonaws.example.conference.handler.CreateConferenceApplications::handleRequest
+      Handler: software.amazonaws.example.conference.handler.CreateConferenceApplication::handleRequest
       Events:
         PutRequest:
           Type: Api
@@ -108,10 +113,10 @@ Resources:
             Method: post
 
 
-  CreateConferenceApplicationsFunctionLogGroup:
+  CreateConferenceApplicationFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${CreateConferenceApplicationsFunction}"
+      LogGroupName: !Sub "/aws/lambda/${CreateConferenceApplicationFunction}"
       RetentionInDays: 7
 
 

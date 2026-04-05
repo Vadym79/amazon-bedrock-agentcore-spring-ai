@@ -1,0 +1,66 @@
+openapi: "3.0.1"
+info:
+  title: "ConferenceTalksAndApplicationsAppAPI"
+  description: "API for Conference Talks And Applications App"
+  version: "1.0"
+servers:
+- url: "https://0ynqpsckol.execute-api.us-east-1.amazonaws.com/{basePath}"
+  variables:
+    basePath:
+      default: "prod"
+paths:
+  /apply:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conferenceId:
+                  type: integer
+                  description: conference id
+                  required: true
+                talkId:
+                  type: integer
+                  description: talk id
+                  required: true
+      responses:
+        "200":
+          description: "200 response"
+          content: {}
+      security:
+      - api_key: []
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:265634257610:function:CreateConferenceApplication:liveVersion/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+        type: "aws_proxy"
+  /talks/{titleSubstring}:
+    get:
+      parameters:
+      - name: "titleSubstring"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          content: {}
+      security:
+      - api_key: []
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:265634257610:function:GetConferenceTalksByTitleSubstring:liveVersion/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+        type: "aws_proxy"
+components:
+  securitySchemes:
+    api_key:
+      type: "apiKey"
+      name: "x-api-key"
+      in: "header"
+x-amazon-apigateway-security-policy: "TLS_1_0"
