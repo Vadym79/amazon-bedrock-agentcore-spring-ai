@@ -12,6 +12,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
 import software.amazon.awssdk.http.HttpStatusCode;
+import software.amazonaws.example.conference.entity.ConferenceTalk;
 
 public class GetConferenceTalksByTitleSubstring
 		implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -30,14 +31,11 @@ public class GetConferenceTalksByTitleSubstring
 		logger.info("title substring: "+titleSubstring);
 		
 		var matchedTalks=talks.stream()
-				.filter(t -> t.title.contains(titleSubstring))
+				.filter(t -> t.title().contains(titleSubstring))
 				.collect(Collectors.toSet());
 	
 		return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.OK)
 						.withBody(" found matched talks: = " + matchedTalks );
-	}
-	
-	private record ConferenceTalk(int talkId, String title, String description) {
 	}
 
 }
