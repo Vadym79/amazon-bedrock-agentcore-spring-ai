@@ -12,16 +12,15 @@ import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntime
 
 public class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:265634257610:runtime/spring_ai_conference_search_application_runtime-143wvBG40Z";
+	private static final String AGENT_RUNTIME_ARN="{YOUR_RUNTIME_ARN}";
 	
 	public static void main(String[] args) throws Exception {
 
-		// String payload =
-			//"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
+		String payload =
+			"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
 		
-		
-		 String payload =
-		 "{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today.\"}";
+		 //String payload =
+		 //"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title.\"}";
 	
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
 		        .apiCallTimeout(Duration.ofMinutes(3))
@@ -32,8 +31,7 @@ public class InvokeRuntimeAgent {
 				.build();
 
 		var invokeAgentRuntimeRequest = InvokeAgentRuntimeRequest.builder()
-				.agentRuntimeArn(AGENT_RUNTIME_ARN)
-				 
+				.agentRuntimeArn(AGENT_RUNTIME_ARN)				 
 				.qualifier("DEFAULT").contentType("application/json").payload(SdkBytes.fromUtf8String(payload)).build();
 		try (var responseStream = bedrockAgentCoreClient
 				.invokeAgentRuntime(invokeAgentRuntimeRequest)) {
