@@ -195,7 +195,7 @@ public class SpringAIAgentController {
 		String headerValue = "Bearer " + token;
 		
 		 HttpClient httpClient = HttpClient.create()
-	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*90);
+	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
 	                
 		var webClientBuilder = WebClient.builder()
 				 .defaultHeader("Authorization", headerValue)

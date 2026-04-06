@@ -16,12 +16,12 @@ public class InvokeRuntimeAgent {
 	
 	public static void main(String[] args) throws Exception {
 
-		// String payload =
-		//	"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
-		
-		
 		 String payload =
-		 "{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027.\"}";
+			"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
+		
+		
+		 //String payload =
+		 //"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027.\"}";
 	
 		//String payload = "{\"prompt\":\"Give me an overview of the order with the id equals 100\"}";
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
