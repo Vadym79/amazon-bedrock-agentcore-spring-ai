@@ -26,14 +26,9 @@ public class RuntimeWithMCPStack extends Stack {
     	var id=ConventionalDefaults.stackName(appName, "runtime-with-mcp-server");
         super(scope, id, stackProps);   
         System.out.println(" stack id "+id);
-        var awsAccountId=(String)this.getNode().tryGetContext("awsAccountId");
-      
-        if(awsAccountId == null || awsAccountId.trim().isEmpty()) {
-        	System.out.println("please provide your aws account id as as content to the call, for example: cdk deploy -c awsAccountId=1234567890101");
-        }
         
-          var ecrImageURI=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("ecrImageURIForConferenceSearchAppAsMCPServer"), awsAccountId);
-        var roleArnForTheAgentCoreRuntime=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("roleArnForTheAgentCoreRuntime"), awsAccountId);
+        var ecrImageURI=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "ecrImageURIForConferenceSearchAppAsMCPServer");     		
+        var roleArnForTheAgentCoreRuntime=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "roleArnForTheAgentCoreRuntime");
        
         // The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
         var agentRuntimeArtifact = AgentRuntimeArtifact.fromImageUri(ecrImageURI);

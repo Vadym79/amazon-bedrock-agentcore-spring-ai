@@ -30,11 +30,6 @@ public class UserClientPoolStack extends Stack {
         System.out.println(" stack id "+id);
         var poolName= "UserPoolForAgentCoreMCP";
         var region=Stack.of(this).getRegion();
-        var awsAccountId=(String)this.getNode().tryGetContext("awsAccountId");
-      
-        if(awsAccountId == null || awsAccountId.trim().isEmpty()) {
-        	System.out.println("please provide your aws account id as as content to the call, for example: cdk deploy -c awsAccountId=1234567890101");
-        }
         
         var userPool=UserPool.Builder.create(this, "UserPoolForAgentCoreMCP").userPoolName(poolName).build();
        
@@ -74,7 +69,7 @@ public class UserClientPoolStack extends Stack {
         		.userPool(userPool).build();
         
         
-        var cognitoDomainPrefix=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("cognitoDomainPrefix"),awsAccountId);
+        var cognitoDomainPrefix=ConventionalDefaults.getContextVariableValue(this, "cognitoDomainPrefix");
         userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
                 .cognitoDomain(CognitoDomainOptions.builder()
              	     .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase()).build()).build());

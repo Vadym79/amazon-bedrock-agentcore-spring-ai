@@ -33,8 +33,6 @@ public class GatewayTargetStack extends Stack {
         System.out.println(" stack id "+id);
               
         var region=Stack.of(this).getRegion();
-        var awsAccountId=(String)this.getNode().tryGetContext("awsAccountId");
-
         var gateway= Gateway.Builder.create(this, "Gateway-123")
            .gatewayName(appName.replace("_", "-")+ "-gateway")
            .authorizerConfiguration(CustomJwtAuthorizer.Builder
@@ -50,9 +48,9 @@ public class GatewayTargetStack extends Stack {
         
        // currently no support for CreateOauth2CredentialProvider even in the 
        // CloudFormation, see the issue https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/2391
-       var oAuthProviderArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("agentcoreIdentityOutboundOAuthArn"),awsAccountId);
-       var oAuthSecretArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("oAuthSecretArn"),awsAccountId);
-                      
+       var oAuthProviderArn=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "agentcoreIdentityOutboundOAuthArn");
+       var oAuthSecretArn=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "oAuthSecretArn");
+    	              
        var oauthCredentialProviderConfigs = List.of(GatewayCredentialProvider
     		       .fromOauthIdentityArn(OAuthConfiguration.builder()
                   .providerArn(oAuthProviderArn)
@@ -78,12 +76,10 @@ public class GatewayTargetStack extends Stack {
        
        // currently no support for CreateAPIKeyCredentialProvider even in the 
        // CloudFormation, see the issue https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/2391
-       var apiKeyProviderArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("agentcoreIdentityOutboundApiKeyArn"),awsAccountId);
-       var apiKeySecretArn=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("apiKeySecretArn"),awsAccountId);
-       
-       var restApiStageName=ConventionalDefaults.replaceAWSAccountID((String)this.getNode().tryGetContext("restApiStageName"),awsAccountId);
-   
-        
+       var apiKeyProviderArn=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "agentcoreIdentityOutboundApiKeyArn");
+       var apiKeySecretArn=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "apiKeySecretArn");
+       var restApiStageName=ConventionalDefaults.getContextVariableValue(this, "restApiStageName");
+         
        var apiKeyProviderConfigs = List.of(GatewayCredentialProvider
     		   .fromApiKeyIdentityArn(ApiKeyCredentialProviderProps.builder()
     		   .providerArn(apiKeyProviderArn)
