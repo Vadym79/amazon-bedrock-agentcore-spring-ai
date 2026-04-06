@@ -1,0 +1,7 @@
+{
+  "app": "mvn -e -q compile exec:java",
+  "context": {
+      "ecrImageURIForConferenceSearchAndApplicationAgent": "{AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/spring-ai-1.1-conference-search-bedrock-agentcore-runtime-mcp-server:v17",
+	  "roleArnForTheAgentCoreRuntime": "arn:aws:iam::{AWS_ACCOUNT_ID}:role/service-role/AmazonBedrockAgentCoreRuntimeDefaultServiceRole-q8xp1",
+  }
+}
