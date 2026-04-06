@@ -22,6 +22,7 @@ import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +36,9 @@ import dev.vkazulkin.agent.tools.DateTimeTools;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.WebClientStreamableHttpTransport;
 import io.modelcontextprotocol.spec.McpClientTransport;
+import io.netty.channel.ChannelOption;
 import reactor.core.publisher.Flux;
+import reactor.netty.http.client.HttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
@@ -190,10 +193,15 @@ public class SpringAIAgentController {
 		var MCP_SERVER_ENDPOINT= this.getMCPServerEndpoint();
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
 		String headerValue = "Bearer " + token;
+		
+		 HttpClient httpClient = HttpClient.create()
+	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*90);
+	                
 		var webClientBuilder = WebClient.builder()
 				 .defaultHeader("Authorization", headerValue)
 				.defaultHeader("accept","application/json, text/event-stream")
-		        .defaultHeader("Content-Type","application/json");
+		        .defaultHeader("Content-Type","application/json")
+		        .clientConnector(new ReactorClientHttpConnector(httpClient));
 		return WebClientStreamableHttpTransport
 				.builder(webClientBuilder)
 				.endpoint(MCP_SERVER_ENDPOINT).build();
