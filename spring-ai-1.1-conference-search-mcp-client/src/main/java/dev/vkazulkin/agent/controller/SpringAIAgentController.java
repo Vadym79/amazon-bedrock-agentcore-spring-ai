@@ -92,9 +92,8 @@ public class SpringAIAgentController {
 
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
 		var options = ToolCallingChatOptions.builder()
-				 //.model("amazon.nova-lite-v1:0")
 				 .model("amazon.nova-pro-v1:0")
-				// .model("anthropic.claude-3-5-sonnet-20240620-v1:0")
+				//.model("global.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
 		this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
