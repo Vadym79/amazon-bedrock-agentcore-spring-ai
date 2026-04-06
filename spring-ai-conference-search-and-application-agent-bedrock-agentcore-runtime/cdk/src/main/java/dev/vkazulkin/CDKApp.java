@@ -7,7 +7,7 @@ import software.amazon.awscdk.StackProps;
 
 public interface CDKApp {
     
-    String appName = "spring-ai-conference-search-and-application-agent-on-agentcore-runtime";
+    String appName = "spring-ai-conference-search-application";
 
     static void main(String... args) {
 

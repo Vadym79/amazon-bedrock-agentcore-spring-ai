@@ -21,7 +21,7 @@ public class RuntimeWithMCPStack extends Stack {
 	public static Runtime runtime;
 
     public RuntimeWithMCPStack(Construct scope, String appName,  StackProps stackProps) {
-    	var id=ConventionalDefaults.stackName(appName, "runtime-with-mcp-server");
+    	var id=ConventionalDefaults.stackName(appName, "agentcore-runtime");
         super(scope, id, stackProps);   
         System.out.println(" stack id "+id);
         
