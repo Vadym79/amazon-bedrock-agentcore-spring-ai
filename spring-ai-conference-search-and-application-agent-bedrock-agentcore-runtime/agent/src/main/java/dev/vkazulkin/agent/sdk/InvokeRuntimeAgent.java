@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntime
 
 public class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="{YOUR_RUNTIME_ARN}";
+	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:265634257610:runtime/spring_ai_conference_search_application_runtime-143wvBG40Z";
 	
 	public static void main(String[] args) throws Exception {
 
@@ -23,7 +23,6 @@ public class InvokeRuntimeAgent {
 		 //String payload =
 		 //"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027.\"}";
 	
-		//String payload = "{\"prompt\":\"Give me an overview of the order with the id equals 100\"}";
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
 		        .apiCallTimeout(Duration.ofMinutes(3))
 		        .apiCallAttemptTimeout(Duration.ofMinutes(3))

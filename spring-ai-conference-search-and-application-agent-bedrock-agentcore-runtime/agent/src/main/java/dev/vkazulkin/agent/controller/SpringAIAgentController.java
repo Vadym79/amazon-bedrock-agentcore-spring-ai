@@ -3,6 +3,7 @@ package dev.vkazulkin.agent.controller;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -194,7 +195,8 @@ public class SpringAIAgentController {
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
 		String headerValue = "Bearer " + token;
 		
-		 HttpClient httpClient = HttpClient.create()
+		 HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(300))
+				    .option(ChannelOption.SO_KEEPALIVE, true)
 	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
 	                
 		var webClientBuilder = WebClient.builder()
