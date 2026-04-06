@@ -10,16 +10,18 @@ import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntime
 
 public class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="{YOUR_AGENT_ARN_ON_AGENTCORE_RUNTIME}";
+	private static final String AGENT_RUNTIME_ARN="{YOUR_RUNTIME_ARN}";
 	
 	public static void main(String[] args) throws Exception {
 
-		String payload ="""
-				Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. 
-				Also provide me with the list of my talks with this topic in the title. 
-				Finally, for each conference and talk retrieved, apply individually for the conference.
-				""";
+		 String payload =
+			"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
 		
+		
+		 //String payload =
+		//"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today\"}";
+	
+		//String payload = "{\"prompt\":\"Give me an overview of the order with the id equals 100\"}";
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().region(Region.US_EAST_1)
 				.build();
 

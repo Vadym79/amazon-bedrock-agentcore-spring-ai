@@ -4,8 +4,8 @@ ADD https://github.com/aws-observability/aws-otel-java-instrumentation/releases/
 
 ENV JAVA_TOOL_OPTIONS=-javaagent:/opt/aws-opentelemetry-agent.jar \
 AGENT_OBSERVABILITY_ENABLED=true \
-OTEL_RESOURCE_ATTRIBUTES=service.name=agentcore_runtime_spring_ai_demo,aws.log.group.names=/aws/bedrock-agentcore/runtimes/agentcore_runtime_spring_ai_demo-tD7f1W6RGi \
-OTEL_EXPORTER_OTLP_LOGS_HEADERS=x-aws-log-group=/aws/bedrock-agentcore/runtimes/agentcore_runtime_spring_ai_demo-tD7f1W6RGi,x-aws-log-stream=runtime-logs,x-aws-metric-namespace=bedrock-agentcore \
+OTEL_RESOURCE_ATTRIBUTES=service.name=spring_ai_conference_search_application_runtime,aws.log.group.names=/aws/bedrock-agentcore/runtimes/spring_ai_conference_search_application_runtime-143wvBG40Z \
+OTEL_EXPORTER_OTLP_LOGS_HEADERS=x-aws-log-group=/aws/bedrock-agentcore/runtimes/spring_ai_conference_search_application_runtime-143wvBG40Z,x-aws-log-stream=runtime-logs,x-aws-metric-namespace=bedrock-agentcore \
 OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
 OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/protobuf \
 OTEL_TRACES_EXPORTER=otlp \
