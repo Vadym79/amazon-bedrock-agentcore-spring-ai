@@ -113,7 +113,7 @@ public class SpringAIAgentController {
 	 * @param prompt - prompt
 	 * @return agent answer
 	 */
-	@PostMapping(value = "/invocationss", consumes = { "*/*" })
+	@PostMapping(value = "/invocations", consumes = { "*/*" })
 	public String invoke(@RequestBody String prompt) {		
 		logger.info("invocations endpoint with prompt: " + prompt);
 		String token = getAuthTokenViaHttpClient();
@@ -138,7 +138,7 @@ public class SpringAIAgentController {
 	 * @param prompt - prompt
 	 * @return asynchronous agent answer
 	 */
-	@PostMapping(value = "/invocations", consumes = { "*/*" })
+	@PostMapping(value = "/invocationss", consumes = { "*/*" })
 	public Flux<String> invocations(@RequestBody String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
 		String token = getAuthTokenViaHttpClient();
@@ -196,7 +196,7 @@ public class SpringAIAgentController {
 		String headerValue = "Bearer " + token;
 		
 		 HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(300))
-				    .option(ChannelOption.SO_KEEPALIVE, true)
+				    //.option(ChannelOption.SO_KEEPALIVE, true)
 	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
 	                
 		var webClientBuilder = WebClient.builder()
