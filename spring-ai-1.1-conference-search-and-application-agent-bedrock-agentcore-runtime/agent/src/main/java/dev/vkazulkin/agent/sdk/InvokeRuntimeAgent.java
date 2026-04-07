@@ -8,11 +8,12 @@ import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockagentcore.BedrockAgentCoreClient;
 import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeRequest;
+import software.amazon.awssdk.services.sts.StsClient;
 
 
 public class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="{YOUR_RUNTIME_ARN}";
+	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_conference_search_application_runtime-143wvBG40Z";
 	
 	public static void main(String[] args) throws Exception {
 
@@ -25,13 +26,12 @@ public class InvokeRuntimeAgent {
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
 		        .apiCallTimeout(Duration.ofMinutes(3))
 		        .apiCallAttemptTimeout(Duration.ofMinutes(3))
-		        .build())
-				
+		        .build())			
 				.region(Region.US_EAST_1)
 				.build();
 
 		var invokeAgentRuntimeRequest = InvokeAgentRuntimeRequest.builder()
-				.agentRuntimeArn(AGENT_RUNTIME_ARN)				 
+				.agentRuntimeArn(replaceAWSAccountID(AGENT_RUNTIME_ARN))				 
 				.qualifier("DEFAULT").contentType("application/json").payload(SdkBytes.fromUtf8String(payload)).build();
 		try (var responseStream = bedrockAgentCoreClient
 				.invokeAgentRuntime(invokeAgentRuntimeRequest)) {
@@ -42,4 +42,16 @@ public class InvokeRuntimeAgent {
 
 	}
 
+    private static String replaceAWSAccountID(String arn ) {
+    	var replacedArn = arn.replace("{AWS_ACCOUNT_ID}", getAccountId());
+    	System.out.println("replaced runtime arn "+replacedArn);
+    	return replacedArn;
+    }
+
+	private static String getAccountId() {
+		var stsClient = StsClient.builder().region(Region.US_EAST_1).build();
+	    var awsAccountId= stsClient.getCallerIdentity().account();
+	    System.out.println("AWS Account Id "+awsAccountId);
+	    return awsAccountId;
+	}
 }

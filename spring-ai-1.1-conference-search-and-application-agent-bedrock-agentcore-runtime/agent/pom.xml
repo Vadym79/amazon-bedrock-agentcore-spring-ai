@@ -13,7 +13,7 @@
 	<artifactId>spring-ai-1.1-conference-search-and-application-agent-bedrock-agentcore-runtime</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-ai-1.1-agent-demo</name>
-	<description>Spring AI 1.1 Conference Search MCP Client</description>
+	<description>Spring AI 1.1. Conference Search and Application Agent running on AgentCore Runtime</description>
 	<url />
 	<licenses>
 		<license />
