@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springaicommunity.agentcore.annotation.AgentCoreInvocation;
 import org.springaicommunity.agentcore.context.AgentCoreContext;
+import org.springaicommunity.agentcore.memory.AgentCoreMemory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -83,22 +84,45 @@ public class SpringAIAgentController {
 	  
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	 // to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
-	 private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
+	// to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
+	private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
 	
+	/**
+	 * use this constructor to inject the short-term memory
+	 * @param builder
+	 * @param chatMemory
+	 */
+	/*
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
-		this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-				.defaultOptions(options)
+		this.chatClient = builder.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
 				//short term memory
 				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())	
 				.build();
+	}
+	*/
+	
+	/** use this constructor to inject the long-term memory
+	 * 
+	 * @param builder
+	 * @param agentCoreMemory
+	 */
+	public SpringAIAgentController(ChatClient.Builder builder, AgentCoreMemory agentCoreMemory) {
+		var options = ToolCallingChatOptions.builder()
+				 //.model("amazon.nova-pro-v1:0")
+				.model("global.anthropic.claude-sonnet-4-6")
+				.maxTokens(2000).build();
 
+		this.chatClient = builder.defaultOptions(options)
+				// .defaultSystem(SYSTEM_PROMPT)
+				//long and short-term memorories
+				.defaultAdvisors(agentCoreMemory.advisors)		
+				.build();
 	}
 
 
