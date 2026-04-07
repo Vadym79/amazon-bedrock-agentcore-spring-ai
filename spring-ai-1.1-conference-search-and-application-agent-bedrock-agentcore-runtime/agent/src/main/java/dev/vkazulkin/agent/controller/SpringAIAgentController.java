@@ -108,7 +108,7 @@ public class SpringAIAgentController {
 	}
 
 	/**
-	 * GET method which has a prompt as an input parameter and outputs the agent response synchronously
+	 * POST method which has a prompt as an input parameter and outputs the agent response synchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return agent answer
@@ -133,7 +133,7 @@ public class SpringAIAgentController {
 	}
 
 	/**
-	 *  GET method which has a prompt as an input parameter and outputs the agent response asynchronously
+	 *  POST method which has a prompt as an input parameter and outputs the agent response asynchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return asynchronous agent answer
