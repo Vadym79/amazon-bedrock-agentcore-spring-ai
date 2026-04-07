@@ -16,7 +16,7 @@ public class ShortTermMemoryStack extends Stack {
         super(scope, id, stackProps);   
         System.out.println(" stack id "+id);
         var memory = Memory.Builder.create(this, "short-term-memory-1")
-              .memoryName("short-term-memory-for-conference-application")
+              .memoryName("short_term_memory_for_conference_application")
               .description("Short-Term Memory for Conference Application")
         	  .expirationDuration(Duration.days(7))
         	  .build();   

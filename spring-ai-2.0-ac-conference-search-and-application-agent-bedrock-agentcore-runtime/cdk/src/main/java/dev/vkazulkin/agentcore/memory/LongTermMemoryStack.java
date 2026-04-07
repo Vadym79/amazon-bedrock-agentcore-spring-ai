@@ -20,7 +20,7 @@ public class LongTermMemoryStack extends Stack {
         System.out.println(" stack id "+id);
         
         var memory = Memory.Builder.create(this, "long-term-memory-1")
-              .memoryName("Long-term-memory-for-conference-application")
+              .memoryName("long_term_memory_for_conference_application")
               .description("Long-Term Memory for Conference Application")
         	  .expirationDuration(Duration.days(7))
         	  .memoryStrategies(List.of(MemoryStrategy.usingBuiltInSummarization(), MemoryStrategy.usingBuiltInSemantic()))

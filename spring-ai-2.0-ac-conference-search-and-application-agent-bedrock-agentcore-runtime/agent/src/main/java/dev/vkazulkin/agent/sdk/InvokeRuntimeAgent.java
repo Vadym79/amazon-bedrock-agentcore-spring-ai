@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 
 public class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_conference_search_application_runtime-143wvBG40Z";
+	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_ac_conference_application_runtime-a00QWV3i7t";
 	
 	public static void main(String[] args) throws Exception {
 
