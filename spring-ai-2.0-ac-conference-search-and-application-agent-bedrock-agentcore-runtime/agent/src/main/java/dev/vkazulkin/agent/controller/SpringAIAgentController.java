@@ -26,7 +26,6 @@ import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -84,6 +83,9 @@ public class SpringAIAgentController {
 	  
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
+	 // to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
+	 private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
+	
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
@@ -93,6 +95,8 @@ public class SpringAIAgentController {
 		this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
 				.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
+				//short term memory
+				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())	
 				.build();
 
 	}
@@ -118,7 +122,9 @@ public class SpringAIAgentController {
 			
 			var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 
-			return this.chatClient.prompt().user(promptRequest.prompt()).toolCallbacks(toolCallbacks)
+			return this.chatClient.prompt().user(promptRequest.prompt())
+					.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
+					.toolCallbacks(toolCallbacks)
 					.call().content();
 		}
 	}
@@ -153,8 +159,10 @@ public class SpringAIAgentController {
 				.build();
 
 		var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
-		var content = this.chatClient.prompt().user(promptRequest.prompt())
-				.toolCallbacks(toolCallbacks).stream().content();
+		var content = this.chatClient.prompt()
+				 .user(promptRequest.prompt())
+				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
+				 .toolCallbacks(toolCallbacks).stream().content();
 
 		// client.close();
 		return content;
