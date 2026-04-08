@@ -55,10 +55,6 @@ import software.amazon.awssdk.services.sts.StsClient;
 @RestController
 public class SpringAIAgentController {
 
-	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
-
-	private final ChatClient chatClient;
-
 	@Value("${cognito.user.pool.name}")
 	private String USER_POOL_NAME;
 	
@@ -74,17 +70,19 @@ public class SpringAIAgentController {
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
 
-	@Value("${aws.region}")
-	private String AWS_REGION;
+	private String awsRegion;
 	
-	private static final CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.builder()
-			.region(Region.US_EAST_1).build();
+	private final CognitoIdentityProviderClient cognitoClient;
 	
-	private static final StsClient stsClient = StsClient.builder().region(Region.US_EAST_1).build();
+	private final StsClient stsClient;
 	  
+	private final ChatClient chatClient;
+	
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	
+	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
 
-	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
+	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
@@ -95,6 +93,9 @@ public class SpringAIAgentController {
 				// .defaultSystem(SYSTEM_PROMPT)
 				.build();
 
+		this.awsRegion=awsRegion;
+		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
 	}
 
 	/**
@@ -212,7 +213,7 @@ public class SpringAIAgentController {
 	
 	private String getMCPServerEndpoint() {
 		if(AGENTCORE_RUNTIME_ID.length()!=0) {
-			return "https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/"
+			return "https://bedrock-agentcore." + awsRegion + ".amazonaws.com/runtimes/"
 			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAccountId();
 		} else if (AGENTCORE_GATEWAY_URL.length() !=0) {
 			return AGENTCORE_GATEWAY_URL;
@@ -328,7 +329,7 @@ public class SpringAIAgentController {
 	 * @param userPoolClient- cognito user pool client
 	 * @return cognito user pool client type for the given cognito user pool client
 	 */
-	private static UserPoolClientType describeUserPoolClient(UserPoolClientDescription userPoolClient) {
+	private UserPoolClientType describeUserPoolClient(UserPoolClientDescription userPoolClient) {
 		var request = DescribeUserPoolClientRequest.builder()
 				.userPoolId(userPoolClient.userPoolId()).clientId(userPoolClient.clientId()).build();
 		var response = cognitoClient.describeUserPoolClient(request);
