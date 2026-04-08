@@ -18,11 +18,11 @@ public class InvokeRuntimeAgent {
 	public static void main(String[] args) throws Exception {
 
 		String payload =
-			"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
+			"{\"prompt\":\"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
+			
+		//String payload =
+			//	"{\"prompt\":\"You recently applied for some conferences for me. Can you provide me with the details?.\"}";
 		
-		 //String payload =
-		 //"{\"prompt\":\"Please provide me with the list of the conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Also provide me with the list of my talks with this topic in the title.\"}";
-	
 		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
 		        .apiCallTimeout(Duration.ofMinutes(3))
 		        .apiCallAttemptTimeout(Duration.ofMinutes(3))
