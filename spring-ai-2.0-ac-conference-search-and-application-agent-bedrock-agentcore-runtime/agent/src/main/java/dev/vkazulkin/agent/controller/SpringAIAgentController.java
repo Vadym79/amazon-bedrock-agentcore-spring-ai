@@ -52,10 +52,6 @@ import software.amazon.awssdk.services.sts.StsClient;
 @RestController
 public class SpringAIAgentController {
 
-	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
-
-	private final ChatClient chatClient;
-
 	@Value("${cognito.user.pool.name}")
 	private String USER_POOL_NAME;
 	
@@ -73,19 +69,22 @@ public class SpringAIAgentController {
 	
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
+	
+	private final ChatClient chatClient;
 
-	@Value("${aws.region}")
-	private String AWS_REGION;
+	private String awsRegion;
+		
+	private final CognitoIdentityProviderClient cognitoClient;
 	
-	private static final CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.builder()
-			.region(Region.US_EAST_1).build();
-	
-	private static final StsClient stsClient = StsClient.builder().region(Region.US_EAST_1).build();
+	private final StsClient stsClient;
 	  
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	// to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
 	private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
+	
+	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
+
 	
 	/**
 	 * use this constructor to inject the short-term memory
@@ -93,7 +92,7 @@ public class SpringAIAgentController {
 	 * @param chatMemory
 	 */
 	/*
-	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory) {
+	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
@@ -104,6 +103,11 @@ public class SpringAIAgentController {
 				//short term memory
 				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())	
 				.build();
+				
+		this.awsRegion=awsRegion;
+		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
+
 	}
 	*/
 	
@@ -112,7 +116,7 @@ public class SpringAIAgentController {
 	 * @param builder
 	 * @param agentCoreMemory
 	 */
-	public SpringAIAgentController(ChatClient.Builder builder, AgentCoreMemory agentCoreMemory) {
+	public SpringAIAgentController(ChatClient.Builder builder, AgentCoreMemory agentCoreMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
@@ -123,6 +127,10 @@ public class SpringAIAgentController {
 				//long and short-term memorories
 				.defaultAdvisors(agentCoreMemory.advisors)		
 				.build();
+		
+		this.awsRegion=awsRegion;
+		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
 	}
 
 
@@ -230,7 +238,7 @@ public class SpringAIAgentController {
 	
 	private MCPServerConfig getMCPServerConfig() {
 		if(AGENTCORE_RUNTIME_ID.length()!=0) {
-			return new MCPServerConfig("https://bedrock-agentcore." + AWS_REGION + ".amazonaws.com/runtimes/",
+			return new MCPServerConfig("https://bedrock-agentcore." + awsRegion + ".amazonaws.com/runtimes/",
 					AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAccountId());			      
 		} else if (AGENTCORE_GATEWAY_BASE_URL.length() !=0) {
 			return new MCPServerConfig(AGENTCORE_GATEWAY_BASE_URL, AGENTCORE_GATEWAY_ENDPOINT);
@@ -346,7 +354,7 @@ public class SpringAIAgentController {
 	 * @param userPoolClient- cognito user pool client
 	 * @return cognito user pool client type for the given cognito user pool client
 	 */
-	private static UserPoolClientType describeUserPoolClient(UserPoolClientDescription userPoolClient) {
+	private UserPoolClientType describeUserPoolClient(UserPoolClientDescription userPoolClient) {
 		var request = DescribeUserPoolClientRequest.builder()
 				.userPoolId(userPoolClient.userPoolId()).clientId(userPoolClient.clientId()).build();
 		var response = cognitoClient.describeUserPoolClient(request);
