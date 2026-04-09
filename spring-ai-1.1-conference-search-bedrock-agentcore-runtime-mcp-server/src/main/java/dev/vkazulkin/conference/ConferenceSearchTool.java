@@ -40,9 +40,8 @@ public class ConferenceSearchTool {
 		logger.info("latest start date "+latestStartDate);
 		
 		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
-				.filter(c -> (c.startDate().isAfter(earliestStartDate) || c.startDate().isEqual(earliestStartDate))
-						&& (c.startDate().isBefore(latestStartDate) || c.startDate().isEqual(latestStartDate)))
-				.collect(Collectors.toSet());
+				.filter(c -> isConferenceStartDateInDateRange(c, earliestStartDate, latestStartDate))
+			    .collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
 		return foundConferences;
@@ -59,11 +58,10 @@ public class ConferenceSearchTool {
 		logger.info("latest start date "+latestStartDate);
 		logger.info("call for papers still open on date "+callForPapersStillOpenOnThisDate);
 		
-		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
-				.filter(c -> (c.startDate().isAfter(earliestStartDate) || c.startDate().isEqual(earliestStartDate))
-						&& (c.startDate().isBefore(latestStartDate) || c.startDate().isEqual(latestStartDate)))
-			     .filter(c -> (c.callForPapersStartDate().isBefore(callForPapersStillOpenOnThisDate) || c.callForPapersStartDate().isEqual(callForPapersStillOpenOnThisDate)) 
-			    		 && (c.callForPapersEndDate().isAfter(callForPapersStillOpenOnThisDate) || c.callForPapersEndDate().isEqual(callForPapersStillOpenOnThisDate)))
+		Set<Conference> foundConferences = this.conferences.stream()
+				.filter(c -> c.topics().contains(topic))
+				.filter(c -> isConferenceStartDateInDateRange(c, earliestStartDate, latestStartDate))
+			    .filter(c -> isCallForPapersOpenOnThisDate(c, callForPapersStillOpenOnThisDate))
 				.collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
@@ -94,4 +92,17 @@ public class ConferenceSearchTool {
 			throw new RuntimeException("can't read conferences: ",ex);
 		}
 	}
+	
+	
+	private static boolean isConferenceStartDateInDateRange (Conference c, LocalDate earliestStartDate,
+			 LocalDate latestStartDate) {
+		return (c.startDate().isAfter(earliestStartDate) || c.startDate().isEqual(earliestStartDate))
+				&& (c.startDate().isBefore(latestStartDate) || c.startDate().isEqual(latestStartDate)); 
+	}
+	
+	private static boolean isCallForPapersOpenOnThisDate (Conference c, LocalDate callForPapersStillOpenOnThisDate) {
+		return (c.callForPapersStartDate().isBefore(callForPapersStillOpenOnThisDate) || c.callForPapersStartDate().isEqual(callForPapersStillOpenOnThisDate)) 
+	    		 && (c.callForPapersEndDate().isAfter(callForPapersStillOpenOnThisDate) || c.callForPapersEndDate().isEqual(callForPapersStillOpenOnThisDate)); 
+	}
+
 }
