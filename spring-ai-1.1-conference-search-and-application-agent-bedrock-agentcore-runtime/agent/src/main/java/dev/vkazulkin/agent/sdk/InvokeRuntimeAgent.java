@@ -5,6 +5,7 @@ import java.time.Duration;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockagentcore.BedrockAgentCoreClient;
 import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeRequest;
@@ -20,11 +21,14 @@ public class InvokeRuntimeAgent {
 		String payload =
 				"{\"prompt\":\"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
 						
-		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder().overrideConfiguration(ClientOverrideConfiguration.builder()
-		        .apiCallTimeout(Duration.ofMinutes(3))
-		        .apiCallAttemptTimeout(Duration.ofMinutes(3))
-		        .build())			
+		var httpClient=ApacheHttpClient.builder()
+	    .connectionTimeout(Duration.ofMinutes(5))
+	    .socketTimeout(Duration.ofMinutes(5))
+	    .build();
+		
+		var bedrockAgentCoreClient = BedrockAgentCoreClient.builder()
 				.region(Region.US_EAST_1)
+				.httpClient(httpClient)
 				.build();
 
 		var invokeAgentRuntimeRequest = InvokeAgentRuntimeRequest.builder()
