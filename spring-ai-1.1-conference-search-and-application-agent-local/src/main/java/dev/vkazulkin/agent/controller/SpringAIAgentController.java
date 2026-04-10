@@ -333,9 +333,6 @@ public class SpringAIAgentController {
 		return optionalType.get();
 	}
 	
-	private record Credentials(String username, String password) {
-	}
-	
 	private class AuthTokenResponseHandler implements HttpClientResponseHandler<String> {
 		@Override
 		public String handleResponse(ClassicHttpResponse response) throws HttpException, IOException {
