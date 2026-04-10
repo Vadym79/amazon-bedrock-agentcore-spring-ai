@@ -196,7 +196,7 @@ public class SpringAIAgentController {
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
 		String headerValue = "Bearer " + token;
 		
-		 HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(300))
+		 HttpClient httpClient = HttpClient.create()
 				    //.option(ChannelOption.SO_KEEPALIVE, true)
 				    .responseTimeout(Duration.ofMinutes(5))
 	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
