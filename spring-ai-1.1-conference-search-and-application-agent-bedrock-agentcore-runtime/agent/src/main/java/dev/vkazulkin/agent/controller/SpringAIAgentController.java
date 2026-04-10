@@ -198,6 +198,7 @@ public class SpringAIAgentController {
 		
 		 HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(300))
 				    //.option(ChannelOption.SO_KEEPALIVE, true)
+				    .responseTimeout(Duration.ofMinutes(5))
 	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
 	                
 		var webClientBuilder = WebClient.builder()
