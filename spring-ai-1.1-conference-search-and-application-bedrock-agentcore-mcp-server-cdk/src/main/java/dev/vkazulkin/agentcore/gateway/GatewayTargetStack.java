@@ -102,7 +102,11 @@ public class GatewayTargetStack extends Stack {
         					ApiGatewayToolFilter.builder()
         						.filterPath("/apply")
         						.methods(List.of(ApiGatewayHttpMethod.POST))
-        						.build()))
+        						.build(),
+    						ApiGatewayToolFilter.builder()
+	    						.filterPath("/talks")
+	    						.methods(List.of(ApiGatewayHttpMethod.POST))
+	    						.build()))
                  	.toolOverrides(List.of(
                  			ApiGatewayToolOverride.builder()
         	                       .method(ApiGatewayHttpMethod.POST)
@@ -110,6 +114,13 @@ public class GatewayTargetStack extends Stack {
         	                       .path("/apply")
         	                       .description("apply to the conference with conference Id and talk Id")
         	                       .build(), 
+                        	ApiGatewayToolOverride.builder()
+         	                       .method(ApiGatewayHttpMethod.POST)
+         	                       .name("create-new-talk")
+         	                       .path("/talks")
+         	                       .description("create a new talk with talk Id, title and description")
+         	                       .build(), 
+        	                
         	                 ApiGatewayToolOverride.builder()
         	                       .method(ApiGatewayHttpMethod.GET)
         	                       .name("get-talks-by-title-substring")

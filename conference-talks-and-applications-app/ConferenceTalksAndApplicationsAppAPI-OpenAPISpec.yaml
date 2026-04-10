@@ -37,6 +37,34 @@ paths:
         passthroughBehavior: "when_no_match"
         responseTransferMode: "BUFFERED"
         type: "aws_proxy"
+  /talks:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: talk title
+                  required: true
+                description:
+                  type: string
+                  description: talk descirption
+                  required: true
+      responses:
+        "200":
+          description: "200 response"
+          content: {}
+      security:
+      - api_key: []
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:265634257610:function:CreateConferenceTalk:liveVersion/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+        type: "aws_proxy"
   /talks/{titleSubstring}:
     get:
       parameters:

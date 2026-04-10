@@ -119,6 +119,26 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${CreateConferenceApplicationFunction}"
       RetentionInDays: 7
 
+  CreateConferenceTalkFunction:
+     Type: AWS::Serverless::Function
+     Properties:
+       FunctionName: CreateConferenceTalk
+       AutoPublishAlias: liveVersion 
+       Handler: software.amazonaws.example.conference.handler.CreateConferenceTalk::handleRequest
+       Events:
+         PutRequest:
+           Type: Api
+           Properties:
+             RestApiId: !Ref MyApi
+             Path: /talks
+             Method: post
+
+
+  CreateConferenceTalkFunctionLogGroup:
+     Type: AWS::Logs::LogGroup
+     Properties:
+       LogGroupName: !Sub "/aws/lambda/${CreateConferenceTalkFunction}"
+       RetentionInDays: 7
 
   GetConferenceTalksByTitleSubstringFunction:
     Type: AWS::Serverless::Function
