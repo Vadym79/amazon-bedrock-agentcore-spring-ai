@@ -37,17 +37,13 @@ import io.modelcontextprotocol.spec.McpClientTransport;
 import reactor.core.publisher.Flux;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolsRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientDescription;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolDescriptionType;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.sts.StsClient;
 
 
@@ -77,9 +73,7 @@ public class SpringAIAgentController {
 	private final CognitoIdentityProviderClient cognitoClient;
 			
 	private final StsClient stsClient;
-	  
-	private final SecretsManagerClient client;
-	
+	  	
 	private final ChatClient chatClient;
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -99,8 +93,7 @@ public class SpringAIAgentController {
 
 		this.awsRegion=awsRegion;
 		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
-		client = SecretsManagerClient.builder().region(Region.of(awsRegion)).build();		
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();		
 	}
 
 	/**
@@ -123,7 +116,6 @@ public class SpringAIAgentController {
 	public String conferenceSearchSync(@RequestParam String prompt) {
 		
 		logger.info("invocations endpoint with prompt: " + prompt);
-		//String token = getAuthTokenViaCognitoClient();
 		String token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
@@ -150,7 +142,6 @@ public class SpringAIAgentController {
 	public Flux<String> conferenceSearch(@RequestParam String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
 
-		//String token = getAuthTokenViaCognitoClient();
 		String token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
@@ -279,67 +270,7 @@ public class SpringAIAgentController {
 	}
 
 	
-	/**
-	 * returns authorization token required by the mcp client
-	 * 
-	 * @return authorization token
-	 */
-	private String getAuthTokenViaCognitoClient() {
-		var userPool = getUserPool();
-		logger.info("user pool " + userPool);
-		if (userPool == null) {
-			throw new RuntimeException("cognito user pool with the name " + USER_POOL_NAME + " is not found");
-		}
-
-		var userPoolClient = getUserPoolClient(userPool);
-
-		logger.info("user pool client " + userPoolClient);
-
-		if (userPoolClient == null) {
-			throw new RuntimeException(
-					"cognito user pool client with the name " + USER_POOL_CLIENT_NAME + " is not found");
-		}
-		String authToken = getAuthToken(userPoolClient.clientId());
-		logger.info("auth token " + authToken);
-
-		return authToken;
-	}
-
-	/**
-	 * returns authentication token
-	 * 
-	 * @param clientId - pool client id
-	 * @return authentication token
-	 */
-	private String getAuthToken(String clientId) {
-		try {
-			var credentials=getCredentials();
-			var initiateAuthRequest = InitiateAuthRequest
-					.builder().authFlow(AuthFlowType.USER_PASSWORD_AUTH).clientId(clientId)
-					.authParameters(Map
-							.of("USERNAME", credentials.username(), "PASSWORD", credentials.password))
-					.build();
-			var initiateAuthResponse = cognitoClient.initiateAuth(initiateAuthRequest);
-			return initiateAuthResponse.authenticationResult().accessToken();
-		} catch (Exception e) {
-			logger.error("can't retrieve auth token ", e);
-			return null;
-		}
-
-	}
-
-	/**
-	 * returns credentials for getting the auth token from cognito
-	 * 
-	 * @return credentials for getting the auth token from cognito
-	 */
-	private Credentials getCredentials() throws Exception {
-		var getSecretValueRequest = GetSecretValueRequest.builder().secretId(SECRET_NAME).build();
-		var getSecretValueResponse = client.getSecretValue(getSecretValueRequest);
-
-		return objectMapper.readValue(getSecretValueResponse.secretString(), Credentials.class);
-	}
-
+	
 	/**
 	 * returns cognito user pool with specific user name
 	 * 
