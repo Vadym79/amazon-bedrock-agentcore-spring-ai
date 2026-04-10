@@ -23,19 +23,22 @@ public class UserClientPoolStack extends Stack {
 	
 	public static String COGNITO_DISCOVERY_URL;
 	public static UserPoolClient userPoolClient;
+	
+	private static final String USER_POOL_NAME="UserPoolForAgentCoreMCP";
+	private static final String USER_CLIENT_POOL_NAME="UserPoolClientWithUserAndPasswordForAgentCoreMCP";
+	private static final String AUTH_TOKEN_RESOURCE_SERVER_ID="AgentCoreResourceServerId";
 
     public UserClientPoolStack(Construct scope, String appName,  StackProps stackProps) {
     	var id=ConventionalDefaults.stackName(appName, "user-client-pool");
         super(scope, id, stackProps);   
         System.out.println(" stack id "+id);
-        var poolName= "UserPoolForAgentCoreMCP";
         var region=Stack.of(this).getRegion();
         
-        var userPool=UserPool.Builder.create(this, "UserPoolForAgentCoreMCP").userPoolName(poolName).build();
+        var userPool=UserPool.Builder.create(this, "UserPoolForAgentCoreMCP").userPoolName(USER_POOL_NAME).build();
        
         var fullAccessScope = ResourceServerScope.Builder.create().scopeName("*").scopeDescription("Full access").build();
         var userServer = userPool.addResourceServer("AgentCoreResourceServer", UserPoolResourceServerOptions.builder()
-                 .identifier("AgentCoreResourceServerId")
+                 .identifier(AUTH_TOKEN_RESOURCE_SERVER_ID)
                  .scopes(List.of(fullAccessScope))
                  .build());
    
@@ -64,7 +67,7 @@ public class UserClientPoolStack extends Stack {
         						  .authorizationCodeGrant(false).build())
         				 .scopes(List.of(OAuthScope.resourceServer(userServer, fullAccessScope)))
         				 .build())
-        		.userPoolClientName("UserPoolClientWithUserAndPasswordForAgentCoreMCP")
+        		.userPoolClientName(USER_CLIENT_POOL_NAME)
         		.generateSecret(true)		
         		.userPool(userPool).build();
         
@@ -77,7 +80,10 @@ public class UserClientPoolStack extends Stack {
         
         CfnOutput.Builder.create(this, "CognitoUserPoolIdOutput").value(userPoolId).build();
         CfnOutput.Builder.create(this, "CognitoUserPoolClientIdOutput").value(userPoolClient.getUserPoolClientId()).build();
-        CfnOutput.Builder.create(this, "CognitoUserPoolClientSecretOutput").value(userPoolClient.getUserPoolClientSecret().toString()).build();
+        //CfnOutput.Builder.create(this, "CognitoUserPoolClientSecretOutput").value(userPoolClient.getUserPoolClientSecret().toString()).build();
         CfnOutput.Builder.create(this, "CognitoDiscoveryURLOutput").value(COGNITO_DISCOVERY_URL).build();
+        CfnOutput.Builder.create(this, "CognitoUserPoolName").value(USER_POOL_NAME);
+        CfnOutput.Builder.create(this, "CognitoUserClientPoolName").value(USER_CLIENT_POOL_NAME);
+        CfnOutput.Builder.create(this, "CognitoAuthTokenResourceServerId").value(AUTH_TOKEN_RESOURCE_SERVER_ID);
     }  
 }
