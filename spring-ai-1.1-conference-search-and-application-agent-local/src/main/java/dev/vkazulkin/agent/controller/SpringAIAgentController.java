@@ -65,9 +65,6 @@ public class SpringAIAgentController {
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
 	
-	@Value("${secrets.manager.secret.name}")
-	private String SECRET_NAME;
-
 	private final String awsRegion;
 	
 	private final CognitoIdentityProviderClient cognitoClient;
