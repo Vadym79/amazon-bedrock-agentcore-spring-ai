@@ -1,4 +1,4 @@
-package dev.vkazulkin.agent.controller;
+package dev.vkazulkin.embabel.agent.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.embabel.agent.api.invocation.AgentInvocation;
 import com.embabel.agent.core.AgentPlatform;
 
-import dev.vkazulkin.embabel.agent.Domain;
+import dev.vkazulkin.embabel.agent.domain.Domain;
 
 
 @RestController

@@ -12,8 +12,8 @@ import org.springframework.core.io.DefaultResourceLoader;
 import com.embabel.agent.config.models.bedrock.BedrockModelLoader;
 import com.embabel.agent.core.ToolGroup;
 
-import dev.vkazulkin.embabel.agent.ConferenceConfig;
-import dev.vkazulkin.embabel.agent.McpToolService;
+import dev.vkazulkin.embabel.agent.config.ConferenceConfig;
+import dev.vkazulkin.embabel.agent.service.McpToolService;
 
 
 

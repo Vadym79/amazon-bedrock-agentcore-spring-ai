@@ -1,4 +1,4 @@
-package dev.vkazulkin.embabel.agent;
+package dev.vkazulkin.embabel.agent.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;

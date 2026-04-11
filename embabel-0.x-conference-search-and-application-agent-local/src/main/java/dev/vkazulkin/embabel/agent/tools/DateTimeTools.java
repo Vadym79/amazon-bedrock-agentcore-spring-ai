@@ -1,4 +1,4 @@
-package dev.vkazulkin.agent.tools;
+package dev.vkazulkin.embabel.agent.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

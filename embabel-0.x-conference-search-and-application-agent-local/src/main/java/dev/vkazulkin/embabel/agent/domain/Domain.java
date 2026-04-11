@@ -1,4 +1,4 @@
-package dev.vkazulkin.embabel.agent;
+package dev.vkazulkin.embabel.agent.domain;
 
 import java.time.LocalDate;
 import java.util.Set;
