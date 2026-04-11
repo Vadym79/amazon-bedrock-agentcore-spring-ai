@@ -15,6 +15,7 @@ import com.embabel.common.ai.model.LlmOptions;
 
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
+import dev.vkazulkin.embabel.service.McpToolService;
 
 @Agent(name =CreateTalksAndApplyForConferencesAgent.AGENT_NAME,  description = "create new talk(s), search for the conferences, and apply for them with the create talk")
 public class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
@@ -22,8 +23,8 @@ public class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAg
 	public static final String AGENT_NAME="CreateNewTalksAndApplyForConferencesAgent"; 
 	private static final Logger logger = LoggerFactory.getLogger(CreateTalksAndApplyForConferencesAgent.class);
 
-	public CreateTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
-		super(config, toolGroup);
+	public CreateTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup, McpToolService mcpToolService) {
+		super(config, toolGroup, mcpToolService);
 	}
 	
 	@Action

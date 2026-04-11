@@ -15,6 +15,7 @@ import com.embabel.common.ai.model.LlmOptions;
 
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
+import dev.vkazulkin.embabel.service.McpToolService;
 
 @Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talk(s), search for the conference(s) by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
 public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
@@ -23,8 +24,8 @@ public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenc
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchForTalksAndApplyForConferencesAgent.class);
 	
-	public SearchForTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
-		super(config, toolGroup);
+	public SearchForTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup, McpToolService mcpToolService) {
+		super(config, toolGroup, mcpToolService);
 	}
 
 	

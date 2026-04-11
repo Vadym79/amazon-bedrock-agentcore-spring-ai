@@ -28,12 +28,12 @@ public class EmbabelConferenceApplicationOnAgentCore {
 			SpringApplication.run(EmbabelConferenceApplicationOnAgentCore.class, args);
 	}
 	
+	
 	@Bean 
 	@Primary
 	public ToolGroup getToolGroup() {
 		return this.mcpToolService.getToolGroup();
 	}
-	
 	
 	@Configuration
 	class AdditionalBedrockModels {

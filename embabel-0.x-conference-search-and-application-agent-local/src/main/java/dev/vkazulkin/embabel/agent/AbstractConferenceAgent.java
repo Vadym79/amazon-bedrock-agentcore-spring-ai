@@ -16,16 +16,22 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 import dev.vkazulkin.embabel.tool.DateTimeTools;
+import dev.vkazulkin.embabel.service.McpToolService;
 
 abstract class AbstractConferenceAgent {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractConferenceAgent.class);
 
-	protected ConferenceConfig config;
+	protected final ConferenceConfig config;
 	protected ToolGroup toolGroup;
-
-	public AbstractConferenceAgent(ConferenceConfig config, ToolGroup toolGroup) {
+    
+	// handle JWT auth token expiration and mcp client connection timeout by invoking
+	// this.toolGroup = mcpToolService.getToolGroup(); and using it with prompt runner
+	protected final McpToolService mcpToolService; 	
+    
+	public AbstractConferenceAgent(ConferenceConfig config,ToolGroup toolGroup, McpToolService mcpToolService) {
 		this.config = config;
+		this.mcpToolService=mcpToolService;
 		this.toolGroup = toolGroup;
 	}
 
@@ -34,10 +40,10 @@ abstract class AbstractConferenceAgent {
 		logger.info("invoked conferenceSearchRequest with the request: " + userInput);
 		return context.ai()
 				//.withDefaultLlm()
-				.withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
+				.withLlm(LlmOptions.withModel("us.anthropic.claude-sonnet-4-6"))
 				.createObject("""
 				Create a conference search request from this user input, extracting optional information like conference topic, start and end dates and call for papers still open on the request date.
-				Don't include any other information into this request.:
+				Don't include any other not conference search related information like conference application and talk search details into this request.:
 				%s""".formatted(userInput.getContent()), Domain.ConferenceSearchRequest.class);
 	}
 
