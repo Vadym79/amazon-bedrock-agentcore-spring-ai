@@ -52,7 +52,6 @@ public class EmbabelAgentController {
 	 */
 	@GetMapping(value = "/applyToConferencesWithExistingTalks", consumes = "text/plain")
 	public Domain.ConferenceApplications applyToConferencesWithExistingTalks(@RequestParam String prompt) {
-		
 		logger.info("applyToConferencesWithExistingTalks invoked with prompt: " + prompt);        
 	    return this.invokeAgent(prompt, SearchForTalksAndApplyForConferencesAgent.AGENT_NAME);	
 	}
@@ -71,14 +70,11 @@ public class EmbabelAgentController {
 	}
 
 	
-	private Domain.ConferenceApplications invokeAgent(String prompt, String agentName) {
-		
+	private Domain.ConferenceApplications invokeAgent(String prompt, String agentName) {		
 		logger.info("applyToConferenceWithExistingTalks invoked with prompt: " + prompt);        
 		logger.info("agent platform agents " + this.agentPlatform.agents());
 		
-		var inputs = Map.of(
-			    "request", new UserInput(prompt)
-			);
+		var inputs = Map.of("request", new UserInput(prompt));
 		
 		var agent= this.getByName(agentName);
 		var agentProcess=this.agentPlatform.createAgentProcess(agent, processOptions, inputs);
