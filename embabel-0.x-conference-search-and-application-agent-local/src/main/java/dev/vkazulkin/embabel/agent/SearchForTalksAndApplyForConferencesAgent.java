@@ -16,12 +16,14 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 
-@Agent(description = "search for the talks, search for the conferences by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
-public class SearchForTalksAndConferencesAndApplyForConferencesAgent extends AbstractConferenceAgent {
+@Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talks, search for the conferences by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
+public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
-	private final static Logger logger = LoggerFactory.getLogger(SearchForTalksAndConferencesAndApplyForConferencesAgent.class);
+	public static final String AGENT_NAME="SearchForExistingTalksAndApplyForConferencesAgent"; 
+
+	private static final Logger logger = LoggerFactory.getLogger(SearchForTalksAndApplyForConferencesAgent.class);
 	
-	public SearchForTalksAndConferencesAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
+	public SearchForTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
 		super(config, toolGroup);
 	}
 
@@ -34,7 +36,7 @@ public class SearchForTalksAndConferencesAndApplyForConferencesAgent extends Abs
 			    .withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
 	           .createObject("""
 	                Create a talk search request from this user input, extracting the talk title substring. 
-	                Don't include any other information.:
+	                Don't include any other information into the request.:
 	                %s""".formatted(userInput.getContent()), Domain.TalkSearchRequest.class);
 	}	
 

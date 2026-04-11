@@ -16,10 +16,11 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 
-@Agent(description = "create the talk, search for the conferences, and apply for them with the create talk")
+@Agent(name =CreateTalkAndApplyForConferencesAgent.AGENT_NAME,  description = "create the talk, search for the conferences, and apply for them with the create talk")
 public class CreateTalkAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
-	private final static Logger logger = LoggerFactory.getLogger(CreateTalkAndApplyForConferencesAgent.class);
+	public static final String AGENT_NAME="CreateNewTalkAndApplyForConferencesAgent"; 
+	private static final Logger logger = LoggerFactory.getLogger(CreateTalkAndApplyForConferencesAgent.class);
 
 	public CreateTalkAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
 		super(config, toolGroup);
@@ -32,14 +33,14 @@ public class CreateTalkAndApplyForConferencesAgent extends AbstractConferenceAge
 				//.withDefaultLlm()
 				.withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
 				.createObject("""
-				Create a talk creation request from this user input, extracting the criteria like title and description conditions. 
-				Don't include any other information.:
+				Create a talk creation request from this user input, extracting the criteria like talk title and description conditions. 
+				Don't include any other information into this request.:
 				%s""".formatted(userInput.getContent()), Domain.TalkCreationRequest.class);
 	}
 	
 	@Action
-	Domain.Talks createTalk(Domain.TalkCreationRequest talkCreationRequest, Ai ai) {
-		logger.info("invoked createTalk with the request: "+talkCreationRequest);
+	Domain.Talks createTalks(Domain.TalkCreationRequest talkCreationRequest, Ai ai) {
+		logger.info("invoked createTalk(s) with the request: "+talkCreationRequest);
 		return config.speaker()		
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkCreationRequest))

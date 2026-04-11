@@ -19,7 +19,7 @@ import dev.vkazulkin.embabel.tool.DateTimeTools;
 
 abstract class AbstractConferenceAgent {
 
-	private final static Logger logger = LoggerFactory.getLogger(AbstractConferenceAgent.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractConferenceAgent.class);
 
 	protected ConferenceConfig config;
 	protected ToolGroup toolGroup;
@@ -37,11 +37,12 @@ abstract class AbstractConferenceAgent {
 				.withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
 				.createObject("""
 				Create a conference search request from this user input, extracting optional information like conference topic, start and end dates and call for papers still open on the request date.
-				Don't include any other information.:
+				Don't include any other information into this request.:
 				%s""".formatted(userInput.getContent()), Domain.ConferenceSearchRequest.class);
 	}
 
 	@Action
+	//@AchievesGoal(description = "provide the list of the conferences that match the search criteria")
 	Domain.Conferences conferenceSearch(Domain.ConferenceSearchRequest conferenceSearchRequest, Ai ai) {
 		logger.info("invoked conferenceSearch with the request: " + conferenceSearchRequest);
 		return config.attendee().promptRunner(ai)
@@ -50,7 +51,7 @@ abstract class AbstractConferenceAgent {
 				.withToolObject(new DateTimeTools())
 				.createObject("search for the conference with the given criteria", Domain.Conferences.class);
 	}
-
+	
 	@Action
 	@AchievesGoal(description = "apply for the conferences with their IDs and talk IDs and provide status of the application")
 	Domain.ConferenceApplications applyForConference(Domain.Conferences conferences, Domain.Talks talks, Ai ai) {
