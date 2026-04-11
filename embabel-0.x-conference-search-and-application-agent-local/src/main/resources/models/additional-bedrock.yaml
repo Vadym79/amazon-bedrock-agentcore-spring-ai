@@ -1,0 +1,25 @@
+models:
+  - name: "us_anthropic_claude-sonnet_4_6"
+    model_id: "us.anthropic.claude-sonnet-4-6"
+    display_name: "Anthropic Claude Sonnet 4.6"
+    region: "us"
+    knowledge_cutoff_date: "2025-05-01"
+    pricing_model:
+      usd_per1m_input_tokens: 3.00
+      usd_per1m_output_tokens: 15.00
+  - name: "us_amazon_nova_lite_1"
+    model_id: "us.amazon.nova-lite-v1:0"
+    display_name: "Nova Lite (US)"
+    region: "us"
+    knowledge_cutoff_date: "2024-05-23"
+    pricing_model:
+      usd_per1m_input_tokens: 0.06
+      usd_per1m_output_tokens: 0.24  	  	
+  - name: "us_nova_pro_1"
+    model_id: "us.amazon.nova-pro-v1:0"
+    display_name: "Nova Pro (US)"
+    region: "us"
+    knowledge_cutoff_date: "2024-05-23"
+    pricing_model:
+      usd_per1m_input_tokens: 0.8
+      usd_per1m_output_tokens: 3.2
