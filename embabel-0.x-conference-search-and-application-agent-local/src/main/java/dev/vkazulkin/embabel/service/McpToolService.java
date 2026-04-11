@@ -1,4 +1,4 @@
-package dev.vkazulkin.embabel.agent.service;
+package dev.vkazulkin.embabel.service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

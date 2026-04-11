@@ -13,8 +13,8 @@ import com.embabel.agent.core.ToolGroup;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 
-import dev.vkazulkin.embabel.agent.config.ConferenceConfig;
-import dev.vkazulkin.embabel.agent.domain.Domain;
+import dev.vkazulkin.embabel.config.ConferenceConfig;
+import dev.vkazulkin.embabel.domain.Domain;
 
 @Agent(description = "search for the talks, search for the conferences by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
 public class SearchForTalksAndConferencesAndApplyForConferencesAgent extends AbstractConferenceAgent {
