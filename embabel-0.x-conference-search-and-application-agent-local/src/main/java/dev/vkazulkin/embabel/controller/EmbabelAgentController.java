@@ -14,7 +14,7 @@ import com.embabel.agent.core.ProcessOptions;
 import com.embabel.agent.core.Verbosity;
 import com.embabel.agent.domain.io.UserInput;
 
-import dev.vkazulkin.embabel.agent.CreateTalkAndApplyForConferencesAgent;
+import dev.vkazulkin.embabel.agent.CreateTalksAndApplyForConferencesAgent;
 import dev.vkazulkin.embabel.agent.SearchForTalksAndApplyForConferencesAgent;
 import dev.vkazulkin.embabel.domain.Domain;
 
@@ -26,7 +26,7 @@ public class EmbabelAgentController {
 	// private final AgentInvocation<Domain.ConferenceApplications> invocation;
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmbabelAgentController.class);
-	private ProcessOptions processOptions = new ProcessOptions()
+	private final ProcessOptions processOptions = new ProcessOptions()
 		    .withVerbosity(new Verbosity()
 		    .withShowPrompts(true)
 		    .withShowLlmResponses(true)
@@ -66,7 +66,7 @@ public class EmbabelAgentController {
 	@GetMapping(value = "/applyToConferencesWithNewTalks", consumes = "text/plain")
 	public Domain.ConferenceApplications applyToConferencesWithNewTalks(@RequestParam String prompt) {
 		logger.info("applyToConferencesWithNewTalks invoked with prompt: " + prompt);        
-	    return this.invokeAgent(prompt, CreateTalkAndApplyForConferencesAgent.AGENT_NAME);	
+	    return this.invokeAgent(prompt, CreateTalksAndApplyForConferencesAgent.AGENT_NAME);	
 	}
 
 	
@@ -94,5 +94,4 @@ public class EmbabelAgentController {
 	   logger.info("found agent "+agent);
 	   return agent;
 	}
-
 }

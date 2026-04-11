@@ -16,13 +16,13 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 
-@Agent(name =CreateTalkAndApplyForConferencesAgent.AGENT_NAME,  description = "create the talk, search for the conferences, and apply for them with the create talk")
-public class CreateTalkAndApplyForConferencesAgent extends AbstractConferenceAgent {
+@Agent(name =CreateTalksAndApplyForConferencesAgent.AGENT_NAME,  description = "create new talk(s), search for the conferences, and apply for them with the create talk")
+public class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
-	public static final String AGENT_NAME="CreateNewTalkAndApplyForConferencesAgent"; 
-	private static final Logger logger = LoggerFactory.getLogger(CreateTalkAndApplyForConferencesAgent.class);
+	public static final String AGENT_NAME="CreateNewTalksAndApplyForConferencesAgent"; 
+	private static final Logger logger = LoggerFactory.getLogger(CreateTalksAndApplyForConferencesAgent.class);
 
-	public CreateTalkAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
+	public CreateTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup) {
 		super(config, toolGroup);
 	}
 	

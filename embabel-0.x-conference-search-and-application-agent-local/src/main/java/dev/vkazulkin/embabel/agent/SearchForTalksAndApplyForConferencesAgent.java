@@ -16,7 +16,7 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 
-@Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talks, search for the conferences by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
+@Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talk(s), search for the conference(s) by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
 public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
 	public static final String AGENT_NAME="SearchForExistingTalksAndApplyForConferencesAgent"; 
