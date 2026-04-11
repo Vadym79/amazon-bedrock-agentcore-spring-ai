@@ -15,7 +15,7 @@ import com.embabel.common.ai.model.LlmOptions;
 
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
-import dev.vkazulkin.embabel.tools.DateTimeTools;
+import dev.vkazulkin.embabel.tool.DateTimeTools;
 
 abstract class AbstractConferenceAgent {
 
