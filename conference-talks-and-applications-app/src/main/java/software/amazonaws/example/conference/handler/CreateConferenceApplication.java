@@ -26,7 +26,6 @@ public class CreateConferenceApplication implements RequestHandler<APIGatewayPro
 			try {
 				var requestBody = requestEvent.getBody();
 				logger.info("request body: "+requestBody);
-				//var conferenceApplications = objectMapper.readValue(requestBody, new TypeReference<List<ConferenceApplication>>(){});
 				var conferenceApplications = objectMapper.readValue(requestBody, ConferenceApplication.class);
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.CREATED)
 						.withBody("application = " + conferenceApplications + " created");
