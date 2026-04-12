@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.vkazulkin</groupId>
-    <artifactId>spring-ai-2.0-ac-conference-app-agent-bedrock-agentcore-mcp-server-cdk-cdk</artifactId>
+    <artifactId>spring-ai-2.0-ac-conference-app-agent-bedrock-agentcore-mcp-server-cdk</artifactId>
     <version>0.1</version>
     <build>
         <plugins>
