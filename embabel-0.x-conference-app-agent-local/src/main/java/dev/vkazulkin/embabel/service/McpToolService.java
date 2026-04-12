@@ -79,7 +79,7 @@ public class McpToolService {
 	 * @return mcp sync client
 	 */
 	public McpSyncClient getMcpClient() {	
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		return McpClient.sync(getMcpClientTransport(token)).build(); 
 	}
 
@@ -90,12 +90,11 @@ public class McpToolService {
 	 * @return streamable http mcp client transport
 	 */
 	private McpClientTransport getMcpClientTransport(String token) {
-		
 		var MCP_SERVER_ENDPOINT= this.getMCPServerEndpoint();
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
-		String headerValue = "Bearer " + token;
+		var headerValue = "Bearer " + token;
 		
-		 HttpClient httpClient = HttpClient.create()
+		var httpClient = HttpClient.create()
 				    .option(ChannelOption.SO_KEEPALIVE, true)
 				    .option(EpollChannelOption.TCP_KEEPIDLE, 10)
 				    .option(EpollChannelOption.TCP_KEEPINTVL, 5)
