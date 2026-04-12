@@ -18,13 +18,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 @Component
-public class ConferenceSearchTool {
+public class ConferenceSearchTools {
 
 	private final Set<Conference> conferences;
 	
-	private static final Logger logger = LoggerFactory.getLogger(ConferenceSearchTool.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConferenceSearchTools.class);
 
-	public ConferenceSearchTool(ObjectMapper objectMapper) {
+	public ConferenceSearchTools(ObjectMapper objectMapper) {
 		objectMapper.registerModule(new JavaTimeModule());
 		this.conferences= this.getAllConferences(objectMapper).conferences();
 
