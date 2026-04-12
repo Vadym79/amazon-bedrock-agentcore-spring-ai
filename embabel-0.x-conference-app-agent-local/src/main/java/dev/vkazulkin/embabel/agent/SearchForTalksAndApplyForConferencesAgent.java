@@ -49,7 +49,7 @@ public final class SearchForTalksAndApplyForConferencesAgent extends AbstractCon
 		return config.speaker()		
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkSearchRequest))
-			.withToolGroup(this.getMcpGroupByName("get-talks-by-"))
+			.withToolGroup(this.getMcpToolGroupByName("get-talks-by-"))
 			.createObject("Search for the talk with the given criteria", Domain.Talks.class);
 	}	
 }

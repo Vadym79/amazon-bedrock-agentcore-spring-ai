@@ -46,7 +46,7 @@ public final class CreateTalksAndApplyForConferencesAgent extends AbstractConfer
 		return config.speaker()		
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkCreationRequest))
-			.withToolGroup(this.getMcpGroupByName("create-new-talk"))
+			.withToolGroup(this.getMcpToolGroupByName("create-new-talk"))
 			.createObject("Create the talk with the given criteria", Domain.Talks.class);
 	}
 	

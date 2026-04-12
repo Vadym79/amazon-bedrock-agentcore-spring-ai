@@ -63,7 +63,7 @@ abstract sealed class AbstractConferenceAgent
 		logger.info("invoked conferenceSearch with the request: " + conferenceSearchRequest);
 		return config.attendee().promptRunner(ai)
 				.withPromptContributors(List.of(conferenceSearchRequest))
-				.withToolGroup(this.getMcpGroupByName("Conference_Search_Tool"))
+				.withToolGroup(this.getMcpToolGroupByName("Conference_Search_Tool"))
 				.withToolObject(dateTimeTools)
 				.createObject("""
 						Search for the conference with the given criteria. 
@@ -79,11 +79,11 @@ abstract sealed class AbstractConferenceAgent
 		return config.speaker()
 				.promptRunner(ai)
 				.withPromptContributors(List.of(conferences, talks))
-				.withToolGroup(this.getMcpGroupByName("apply-to-conference"))
+				.withToolGroup(this.getMcpToolGroupByName("apply-to-conference"))
 				.createObject("Apply for the conference with the given criteria", Domain.ConferenceApplications.class);
 	}
 	
-	protected McpToolGroup getMcpGroupByName(String name) {
+	protected McpToolGroup getMcpToolGroupByName(String name) {
 		return new McpToolGroup(
                 ToolGroupDescription.Companion.invoke(
                         "A collection of tools to interact with the MCP conference search service",
