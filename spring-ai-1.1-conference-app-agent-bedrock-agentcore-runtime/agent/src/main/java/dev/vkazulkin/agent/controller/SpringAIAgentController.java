@@ -258,9 +258,9 @@ public class SpringAIAgentController {
 		var url = "https://" + userPoolId + ".auth." + Region.US_EAST_1.id() + ".amazoncognito.com/oauth2/token";
 		logger.info("url: " + url);
 
-		String SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
+		var SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
 		
-		String entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
+		var entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
 				+ "client_secret=" + userPoolClientType.clientSecret() + "&" + "scope=" + SCOPE_STRING;
 
 		logger.info("entity " + entity);
