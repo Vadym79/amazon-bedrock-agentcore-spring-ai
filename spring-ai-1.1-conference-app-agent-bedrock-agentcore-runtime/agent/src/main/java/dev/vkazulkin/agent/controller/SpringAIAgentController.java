@@ -117,7 +117,7 @@ public class SpringAIAgentController {
 	@PostMapping(value = "/invocations", consumes = { "*/*" })
 	public String invoke(@RequestBody String prompt) {		
 		logger.info("invocations endpoint with prompt: " + prompt);
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
 			var toolsResult = client.listTools();
@@ -142,7 +142,7 @@ public class SpringAIAgentController {
 	@PostMapping(value = "/invocationss", consumes = { "*/*" })
 	public Flux<String> invocations(@RequestBody String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
@@ -194,9 +194,9 @@ public class SpringAIAgentController {
 		
 		var MCP_SERVER_ENDPOINT= this.getMCPServerEndpoint();
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
-		String headerValue = "Bearer " + token;
+		var headerValue = "Bearer " + token;
 		
-		 HttpClient httpClient = HttpClient.create()
+		var httpClient = HttpClient.create()
 				    //.option(ChannelOption.SO_KEEPALIVE, true)
 				    .responseTimeout(Duration.ofMinutes(5))
 	                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000*300);
