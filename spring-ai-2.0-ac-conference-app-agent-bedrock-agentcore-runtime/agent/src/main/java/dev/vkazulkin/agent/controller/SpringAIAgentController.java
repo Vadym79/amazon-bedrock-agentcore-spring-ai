@@ -171,12 +171,11 @@ public class SpringAIAgentController {
 	private List<Advisor> getAllMemoryAdvisors(ChatMemory chatMemory, List<AgentCoreLongTermMemoryAdvisor> ltmAdvisors) { 
 		Advisor chatMemoryAdvisor= MessageChatMemoryAdvisor.builder(chatMemory).build();
 		var cltmAdvisors=(List<Advisor>)(List<?>) ltmAdvisors;
-		List<Advisor> allAdvisors=new ArrayList<Advisor>();
+		var allAdvisors=new ArrayList<Advisor>();
 		allAdvisors.addAll(cltmAdvisors);
 		if(chatMemoryAdvisor!=null) {
 			allAdvisors.add(chatMemoryAdvisor);
 		}
-		
 		logger.info("all advisors: "+allAdvisors);
 		return allAdvisors;
 	}
