@@ -12,6 +12,7 @@ import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.core.ToolGroup;
 import com.embabel.agent.core.ToolGroupDescription;
 import com.embabel.agent.core.ToolGroupPermission;
 import com.embabel.agent.domain.io.UserInput;
@@ -83,7 +84,7 @@ abstract sealed class AbstractConferenceAgent
 				.createObject("Apply for the conference with the given criteria", Domain.ConferenceApplications.class);
 	}
 	
-	protected McpToolGroup getMcpToolGroupByName(String name) {
+	protected ToolGroup getMcpToolGroupByName(String name) {
 		return new McpToolGroup(
                 ToolGroupDescription.Companion.invoke(
                         "A collection of tools to interact with the MCP conference search service",
@@ -101,7 +102,8 @@ abstract sealed class AbstractConferenceAgent
 		// not passing name means return true -> pass all tools
 		if(name==null) return true;
 		var include= toolCallback.getToolDefinition().name().contains(name);
-		logger.info("tool name: " +toolCallback.getToolDefinition().name() + " tool name to include: "+name+ " result:  "+include);
+		logger.info("tool callback name: %s , tool name to include: %s , result include: %s"
+				.formatted(toolCallback.getToolDefinition().name(), name, include));
 		return include;
 	}
 }

@@ -64,7 +64,7 @@ public class Domain {
 		}
 	}
 		
-	public record ConferenceApplication(int conferenceId, int talkId, String status) {}
+	public record ConferenceApplication(int conferenceId, String conferenceName, int talkId, String talkTitle, String talkDescription, String status) {}
 	
 	public record ConferenceApplications(Set<ConferenceApplication> conferenceApplications) {}
 
