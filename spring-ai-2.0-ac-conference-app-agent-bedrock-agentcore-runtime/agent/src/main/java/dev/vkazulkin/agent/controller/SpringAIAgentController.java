@@ -6,6 +6,8 @@ import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,9 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springaicommunity.agentcore.annotation.AgentCoreInvocation;
 import org.springaicommunity.agentcore.context.AgentCoreContext;
-import org.springaicommunity.agentcore.memory.AgentCoreMemory;
+import org.springaicommunity.agentcore.memory.AgentCoreLongTermMemoryAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
@@ -87,7 +90,7 @@ public class SpringAIAgentController {
 
 	
 	/**
-	 * use this constructor to inject the short-term memory
+	 * use this constructor to inject the short-term memory (or no memory)
 	 * @param builder
 	 * @param chatMemory
 	 */
@@ -116,6 +119,7 @@ public class SpringAIAgentController {
 	 * @param builder
 	 * @param agentCoreMemory
 	 */
+	/*
 	public SpringAIAgentController(ChatClient.Builder builder, AgentCoreMemory agentCoreMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
@@ -132,7 +136,39 @@ public class SpringAIAgentController {
 		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
 		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
 	}
+    */
+	
+	/**
+	 * use this constructor to inject the short-term, long-term or no memory
+	 * @param builder
+	 * @param chatMemory
+	 */
+	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory,
+			List<AgentCoreLongTermMemoryAdvisor> ltmAdvisors, @Value("${aws.region}") String awsRegion) {
+		var options = ToolCallingChatOptions.builder()
+				 //.model("amazon.nova-pro-v1:0")
+				.model("global.anthropic.claude-sonnet-4-6")
+				.maxTokens(2000).build();
 
+		Advisor chatMemoryAdvisor= MessageChatMemoryAdvisor.builder(chatMemory).build();
+		var cltmAdvisors=(List<Advisor>)(List<?>) ltmAdvisors;
+		List<Advisor> allAdvisors=List.of();
+		allAdvisors.addAll(cltmAdvisors);
+		allAdvisors.add(chatMemoryAdvisor);
+		
+		logger.info("all advisors: "+allAdvisors);
+	
+		this.chatClient = builder.defaultOptions(options)
+				// .defaultSystem(SYSTEM_PROMPT)
+				.defaultAdvisors(allAdvisors)	
+				.build();
+				
+		this.awsRegion=awsRegion;
+		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
+
+	}
+	
 
 	/**
 	 * POST method which has a prompt as an input parameter and outputs the agent response synchronously
