@@ -189,7 +189,7 @@ public class SpringAIAgentController {
 	@AgentCoreInvocation
 	public String invokeSync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
 		logger.info("invocations endpoint with prompt: " + promptRequest.prompt());
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
 			var toolsResult = client.listTools();
@@ -216,7 +216,7 @@ public class SpringAIAgentController {
 	//@AgentCoreInvocation
 	public Flux<String> invoceAsync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
 		logger.info("invocations endpoint with prompt: " + promptRequest.prompt());
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
@@ -270,7 +270,7 @@ public class SpringAIAgentController {
 		
 		var mcpServerConfig= this.getMCPServerConfig();
 		logger.info("MCP Server config: " + mcpServerConfig);
-		String headerValue = "Bearer " + token;
+		var headerValue = "Bearer " + token;
 		
 	    var httpRequestBuilder = HttpRequest.newBuilder().header("Authorization", headerValue);
 		
@@ -328,9 +328,9 @@ public class SpringAIAgentController {
 		var url = "https://" + userPoolId + ".auth." + Region.US_EAST_1.id() + ".amazoncognito.com/oauth2/token";
 		logger.info("url: " + url);
 
-		String SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
+		var SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
 		
-		String entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
+		var entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
 				+ "client_secret=" + userPoolClientType.clientSecret() + "&" + "scope=" + SCOPE_STRING;
 
 		logger.info("entity " + entity);
