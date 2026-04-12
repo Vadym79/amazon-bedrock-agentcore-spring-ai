@@ -20,9 +20,14 @@ public class GetConferenceTalksByTitleSubstring
 	private static final Logger logger = LoggerFactory.getLogger(GetConferenceTalksByTitleSubstring.class);
 	
 	private Set<ConferenceTalk> talks = Set.of(
-				new ConferenceTalk(1,"Java on AWS Serverless","Description 1"),
-				new ConferenceTalk(2,"Amazon Bedrock AgentCore with Java and Spring AI","Description 2"),
-				new ConferenceTalk(2,"Amazon Bedrock AgentCore with Python and Strands Agents SDK","Description 3")
+				new ConferenceTalk(1,"High performance Java on AWS Serverless",
+						"This talk is about  using Java on AWS Lambda, Lambda SnapStart, and GraalVM Native Image"),
+				new ConferenceTalk(2,"Amazon Bedrock AgentCore with Java and Spring AI",
+						"How to develop AI Agents with Java-based Spring AI framework, and run them on Amazon Bedrock AgentCore"),
+				new ConferenceTalk(3,"Amazon Bedrock AgentCore with Python and Strands Agents SDK",
+						"How to develop AI Agents with Python-based Strands Agents framework, and run them on Amazon Bedrock AgentCore"),
+				new ConferenceTalk(4,"Introduction to AWS Lambda Managed Instances",
+						"What AWS Lambda Managed Instances are, how to use them and differences between them, and default Lambda compute type")
 			);
 
 	@Override
