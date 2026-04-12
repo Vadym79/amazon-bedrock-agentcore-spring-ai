@@ -49,6 +49,6 @@ public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenc
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkSearchRequest))
 			.withToolGroup(this.toolGroup)
-			.createObject("search for the talk with the given criteria", Domain.Talks.class);
+			.createObject("Search for the talk with the given criteria", Domain.Talks.class);
 	}	
 }

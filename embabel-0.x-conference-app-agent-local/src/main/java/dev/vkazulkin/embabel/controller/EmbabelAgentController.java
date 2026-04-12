@@ -71,11 +71,9 @@ public class EmbabelAgentController {
 
 	
 	private Domain.ConferenceApplications invokeAgent(String prompt, String agentName) {		
-		logger.info("applyToConferenceWithExistingTalks invoked with prompt: " + prompt);        
 		logger.info("agent platform agents " + this.agentPlatform.agents());
 		
 		var inputs = Map.of("request", new UserInput(prompt));
-		
 		var agent= this.getByName(agentName);
 		var agentProcess=this.agentPlatform.createAgentProcess(agent, processOptions, inputs);
 		var completedProcess = agentProcess.run();
@@ -83,15 +81,17 @@ public class EmbabelAgentController {
 	}
 	
 	private Agent getByName(String agentName) {
-	   var optionalAgent= this.agentPlatform.agents().stream()
-			   .filter(a -> a.getName().equals(agentName)).findFirst();
+	   var optionalAgent= this.agentPlatform.agents()
+			    .stream()
+			   .filter(a -> a.getName().equals(agentName))
+			   .findFirst();
 	   
 	   if( optionalAgent.isEmpty()) {
 			throw new RuntimeException("agent with the name "+agentName+ " not found");
 		}
 	   
 	   var agent= optionalAgent.get();
-	   logger.info("found agent "+agent);
+	   logger.info("found agent with the name "+agentName+ " : " +agent);
 	   return agent;
 	}
 }

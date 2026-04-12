@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
@@ -24,6 +25,9 @@ abstract class AbstractConferenceAgent {
 
 	protected final ConferenceConfig config;
 	protected ToolGroup toolGroup;
+	
+	@Autowired
+	protected DateTimeTools dateTimeTools;
     
 	// handle JWT auth token expiration and mcp client connection timeout by invoking
 	// this.toolGroup = mcpToolService.getToolGroup(); and using it with prompt runner
@@ -54,8 +58,12 @@ abstract class AbstractConferenceAgent {
 		return config.attendee().promptRunner(ai)
 				.withPromptContributors(List.of(conferenceSearchRequest))
 				.withToolGroup(this.toolGroup)
-				.withToolObject(new DateTimeTools())
-				.createObject("search for the conference with the given criteria", Domain.Conferences.class);
+				.withToolObject(dateTimeTools)
+				.createObject("""
+						Search for the conference with the given criteria. 
+						If you need to get the current time, use DateTimeTools tool for it.
+						""", Domain.Conferences.class);
+						
 	}
 	
 	@Action
@@ -66,6 +74,6 @@ abstract class AbstractConferenceAgent {
 				.promptRunner(ai)
 				.withPromptContributors(List.of(conferences, talks))
 				.withToolGroup(this.toolGroup)
-				.createObject("apply for the conference with the given criteria", Domain.ConferenceApplications.class);
+				.createObject("Apply for the conference with the given criteria", Domain.ConferenceApplications.class);
 	}
 }
