@@ -5,8 +5,8 @@ import java.lang.reflect.Array;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -150,11 +150,14 @@ public class SpringAIAgentController {
 				.model("global.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
+		logger.info("ltm advisors: "+ltmAdvisors);
 		Advisor chatMemoryAdvisor= MessageChatMemoryAdvisor.builder(chatMemory).build();
 		var cltmAdvisors=(List<Advisor>)(List<?>) ltmAdvisors;
-		List<Advisor> allAdvisors=List.of();
+		List<Advisor> allAdvisors=new ArrayList<Advisor>();
 		allAdvisors.addAll(cltmAdvisors);
-		allAdvisors.add(chatMemoryAdvisor);
+		if(chatMemoryAdvisor!=null) {
+			allAdvisors.add(chatMemoryAdvisor);
+		}
 		
 		logger.info("all advisors: "+allAdvisors);
 	
