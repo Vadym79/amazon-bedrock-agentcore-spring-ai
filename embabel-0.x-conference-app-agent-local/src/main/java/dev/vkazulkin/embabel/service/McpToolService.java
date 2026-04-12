@@ -3,9 +3,7 @@ package dev.vkazulkin.embabel.service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -19,14 +17,11 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.embabel.agent.core.ToolGroup;
-import com.embabel.agent.core.ToolGroupDescription;
-import com.embabel.agent.core.ToolGroupPermission;
-import com.embabel.agent.tools.mcp.McpToolGroup;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.WebClientStreamableHttpTransport;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.netty.channel.ChannelOption;
@@ -78,30 +73,15 @@ public class McpToolService {
 		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
 	}
 
-
-	public ToolGroup getToolGroup() {	
-		String token = getAuthTokenViaHttpClient();
-		var client = McpClient.sync(getMcpClientTransport(token)).build(); 
-			//client.initialize();
-			/*
-			var toolsResult = client.listTools();
-			for (var tool : toolsResult.tools()) {
-				logger.info("tool found " + tool);
-			}       
-			*/
-			return new McpToolGroup(
-		                ToolGroupDescription.Companion.invoke(
-		                        "A collection of tools to interact with the MCP conference search service",
-		                        "location"
-		                ),
-		                "Vadym",
-		                "conferenceSearch",
-		                Set.of(ToolGroupPermission.INTERNET_ACCESS),
-		                List.of(client),
-		                callback -> true
-		      );
-	}
 	
+	/** returns mcp sync client
+	 * 
+	 * @return mcp sync client
+	 */
+	public McpSyncClient getMcpClient() {	
+		String token = getAuthTokenViaHttpClient();
+		return McpClient.sync(getMcpClientTransport(token)).build(); 
+	}
 
 	/**
 	 * returns streamable http mcp client transport

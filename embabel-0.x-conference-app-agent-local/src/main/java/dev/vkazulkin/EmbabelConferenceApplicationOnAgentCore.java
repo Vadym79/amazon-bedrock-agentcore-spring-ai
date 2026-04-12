@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import com.embabel.agent.config.models.bedrock.BedrockModelLoader;
-import com.embabel.agent.core.ToolGroup;
 
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.service.McpToolService;
+import io.modelcontextprotocol.client.McpSyncClient;
 
 
 
@@ -31,8 +31,8 @@ public class EmbabelConferenceApplicationOnAgentCore {
 	
 	@Bean 
 	@Primary
-	public ToolGroup getToolGroup() {
-		return this.mcpToolService.getToolGroup();
+	public McpSyncClient geMcpClient() {
+		return this.mcpToolService.getMcpClient();
 	}
 	
 	@Configuration
@@ -43,7 +43,5 @@ public class EmbabelConferenceApplicationOnAgentCore {
 			return new BedrockModelLoader(new DefaultResourceLoader(), "classpath:models/additional-bedrock.yaml");
 		}
 
-	}
-	
-	
+	}	
 }

@@ -16,16 +16,17 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 import dev.vkazulkin.embabel.service.McpToolService;
+import io.modelcontextprotocol.client.McpSyncClient;
 
 @Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talk(s), search for the conference(s) by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
-public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
+public final class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
 	public static final String AGENT_NAME="SearchForExistingTalksAndApplyForConferencesAgent"; 
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchForTalksAndApplyForConferencesAgent.class);
 	
-	public SearchForTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup, McpToolService mcpToolService) {
-		super(config, toolGroup, mcpToolService);
+	public SearchForTalksAndApplyForConferencesAgent(ConferenceConfig config, McpSyncClient mcpClient, McpToolService mcpToolService) {
+		super(config, mcpClient, mcpToolService);
 	}
 
 	
@@ -48,7 +49,7 @@ public class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenc
 		return config.speaker()		
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkSearchRequest))
-			.withToolGroup(this.toolGroup)
+			.withToolGroup(this.getMcpGroupByName("get-talks-by-"))
 			.createObject("Search for the talk with the given criteria", Domain.Talks.class);
 	}	
 }

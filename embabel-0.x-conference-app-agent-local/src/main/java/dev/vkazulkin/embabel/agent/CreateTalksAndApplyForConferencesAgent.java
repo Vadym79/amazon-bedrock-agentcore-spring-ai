@@ -16,15 +16,16 @@ import com.embabel.common.ai.model.LlmOptions;
 import dev.vkazulkin.embabel.config.ConferenceConfig;
 import dev.vkazulkin.embabel.domain.Domain;
 import dev.vkazulkin.embabel.service.McpToolService;
+import io.modelcontextprotocol.client.McpSyncClient;
 
 @Agent(name =CreateTalksAndApplyForConferencesAgent.AGENT_NAME,  description = "create new talk(s), search for the conferences, and apply for them with the create talk")
-public class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
+public final class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
 	public static final String AGENT_NAME="CreateNewTalksAndApplyForConferencesAgent"; 
 	private static final Logger logger = LoggerFactory.getLogger(CreateTalksAndApplyForConferencesAgent.class);
 
-	public CreateTalksAndApplyForConferencesAgent(ConferenceConfig config, ToolGroup toolGroup, McpToolService mcpToolService) {
-		super(config, toolGroup, mcpToolService);
+	public CreateTalksAndApplyForConferencesAgent(ConferenceConfig config, McpSyncClient mcpClient, McpToolService mcpToolService) {
+		super(config, mcpClient, mcpToolService);
 	}
 	
 	@Action
@@ -45,7 +46,7 @@ public class CreateTalksAndApplyForConferencesAgent extends AbstractConferenceAg
 		return config.speaker()		
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkCreationRequest))
-			.withToolGroup(this.toolGroup)
+			.withToolGroup(this.getMcpGroupByName("create-new-talk"))
 			.createObject("Create the talk with the given criteria", Domain.Talks.class);
 	}
 	
