@@ -150,7 +150,25 @@ public class SpringAIAgentController {
 				.model("global.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
-		logger.info("ltm advisors: "+ltmAdvisors);
+		//logger.info("ltm advisors: "+ltmAdvisors);
+	
+		this.chatClient = builder.defaultOptions(options)
+				// .defaultSystem(SYSTEM_PROMPT)
+				.defaultAdvisors(this.getAllMemoryAdvisors(chatMemory, ltmAdvisors))	
+				.build();
+				
+		this.awsRegion=awsRegion;
+		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
+	}
+	
+	/**
+	 * get all advisors from chat memory and long term memory
+	 * @param chatMemory
+	 * @param ltmAdvisors
+	 * @return
+	 */
+	private List<Advisor> getAllMemoryAdvisors(ChatMemory chatMemory, List<AgentCoreLongTermMemoryAdvisor> ltmAdvisors) { 
 		Advisor chatMemoryAdvisor= MessageChatMemoryAdvisor.builder(chatMemory).build();
 		var cltmAdvisors=(List<Advisor>)(List<?>) ltmAdvisors;
 		List<Advisor> allAdvisors=new ArrayList<Advisor>();
@@ -160,18 +178,8 @@ public class SpringAIAgentController {
 		}
 		
 		logger.info("all advisors: "+allAdvisors);
-	
-		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
-				.defaultAdvisors(allAdvisors)	
-				.build();
-				
-		this.awsRegion=awsRegion;
-		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
-
+		return allAdvisors;
 	}
-	
 
 	/**
 	 * POST method which has a prompt as an input parameter and outputs the agent response synchronously
