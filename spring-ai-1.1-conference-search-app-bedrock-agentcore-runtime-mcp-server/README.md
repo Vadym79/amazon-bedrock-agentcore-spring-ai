@@ -82,20 +82,6 @@ mvn spring-boot:run
 
 The server will start at `http://localhost:8000`
 
-### Docker Deployment
-
-Build the Docker image:
-
-```bash
-docker build -t conference-search-mcp-server .
-```
-
-Run the container:
-
-```bash
-docker run -p 8000:8000 conference-search-mcp-server
-```
-
 ## Configuration
 
 The application is configured via `application.properties`:
