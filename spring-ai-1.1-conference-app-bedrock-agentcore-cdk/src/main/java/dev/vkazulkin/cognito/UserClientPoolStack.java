@@ -75,7 +75,9 @@ public class UserClientPoolStack extends Stack {
         var cognitoDomainPrefix=ConventionalDefaults.getContextVariableValue(this, "cognitoDomainPrefix");
         userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
                 .cognitoDomain(CognitoDomainOptions.builder()
-             	     .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase()).build()).build());
+             	      .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase())
+                	  //.domainPrefix(cognitoDomainPrefix)
+             	     .build()).build());
   
         
         CfnOutput.Builder.create(this, "CognitoUserPoolIdOutput").value(userPoolId).build();

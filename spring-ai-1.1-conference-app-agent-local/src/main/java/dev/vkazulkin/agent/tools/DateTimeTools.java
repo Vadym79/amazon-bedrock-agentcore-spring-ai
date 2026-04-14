@@ -12,7 +12,7 @@ public class DateTimeTools {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DateTimeTools.class);
 
-    @Tool(description = "Get the current date ")
+    @Tool(name="Get_The_Current_Date", description = "Get the current date")
     String getLocalDate() {
         var localDate= LocalDate.now().toString();
         logger.info("called tool to return the local date which is "+localDate);
