@@ -109,7 +109,7 @@ public class SpringAIAgentController {
 	 * @param prompt - prompt
 	 * @return agent answer
 	 */
-	@GetMapping(value = "/conference-search-sync", consumes = "text/plain")
+	@GetMapping(value = "/conference-sync", consumes = "text/plain")
 	public String conferenceSearchSync(@RequestParam String prompt) {
 		
 		logger.info("invocations endpoint with prompt: " + prompt);
@@ -135,7 +135,7 @@ public class SpringAIAgentController {
 	 * @param prompt - prompt
 	 * @return asynchronous agent answer
 	 */
-	@GetMapping(value = "/conference-search", consumes = "text/plain")
+	@GetMapping(value = "/conference", consumes = "text/plain")
 	public Flux<String> conferenceSearch(@RequestParam String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
 
@@ -315,7 +315,6 @@ public class SpringAIAgentController {
 	}
 
 	
-
 	/** returns cognito user pool client type for the given cognito user pool client
 	 * 
 	 * @param userPoolClient- cognito user pool client
