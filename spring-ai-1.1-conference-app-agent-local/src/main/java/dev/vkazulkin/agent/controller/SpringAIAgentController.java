@@ -191,7 +191,7 @@ public class SpringAIAgentController {
 		
 		var MCP_SERVER_ENDPOINT= this.getMCPServerEndpoint();
 		logger.info("MCP Server endpoint: " + MCP_SERVER_ENDPOINT);
-		String headerValue = "Bearer " + token;
+		var headerValue = "Bearer " + token;
 		var webClientBuilder = WebClient.builder()
 				 .defaultHeader("Authorization", headerValue)
 				.defaultHeader("accept","application/json, text/event-stream")
