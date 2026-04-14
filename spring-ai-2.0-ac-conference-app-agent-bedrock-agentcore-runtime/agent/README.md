@@ -1,4 +1,4 @@
-# Spring AI 2.0 Conference Application Agent with Bedrock AgentCore Runtime
+# Spring AI 2.0 Conference Application Agent with Amazon Bedrock AgentCore and Spring AI AgentCore
 
 A Spring Boot application that implements an AI agent using Spring AI 2.0 framework, integrated with AWS Bedrock AgentCore Runtime and Model Context Protocol (MCP) for conference search and application management.
 
