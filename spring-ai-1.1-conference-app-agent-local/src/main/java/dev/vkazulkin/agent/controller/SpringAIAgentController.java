@@ -113,7 +113,7 @@ public class SpringAIAgentController {
 	public String conferenceSearchSync(@RequestParam String prompt) {
 		
 		logger.info("invocations endpoint with prompt: " + prompt);
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
 			var toolsResult = client.listTools();
@@ -139,7 +139,7 @@ public class SpringAIAgentController {
 	public Flux<String> conferenceSearch(@RequestParam String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
 
-		String token = getAuthTokenViaHttpClient();
+		var token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
@@ -248,9 +248,9 @@ public class SpringAIAgentController {
 		var url = "https://" + userPoolId + ".auth." + Region.US_EAST_1.id() + ".amazoncognito.com/oauth2/token";
 		logger.info("url: " + url);
 
-		String SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
+		var SCOPE_STRING = RESOURCE_SERVER_ID + "/*";
 		
-		String entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
+		var entity = "grant_type=client_credentials&" + "client_id=" + userPoolClientType.clientId() + "&"
 				+ "client_secret=" + userPoolClientType.clientSecret() + "&" + "scope=" + SCOPE_STRING;
 
 		logger.info("entity " + entity);
