@@ -2,6 +2,13 @@
 
 A serverless Java application deployed on AWS Lambda via API Gateway that manages conference talks and speaker applications.
 
+
+## Architecture
+
+<p align="center">
+  <img src="src/main/resources/img/app_arch.png" alt="Application Architecture"/>
+</p>
+
 ## What it does
 
 Exposes three REST API endpoints (protected by API key):
