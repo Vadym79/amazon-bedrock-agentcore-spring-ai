@@ -17,11 +17,11 @@ public class InvokeRuntimeAgent {
 	
 	public static void main(String[] args) throws Exception {
 
-		//String payload =
-			//	"{\"prompt\":\"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
-				
 		String payload =
-				"{\"prompt\":\"Please create a talk with some cool title (max 60 charachters long) and description (max 700 charachters long) about using Spring AI on Amazon Bedrock AgentCore service. Then provide me with the list of conferences including their ids with Java topic hapenning in 2026 and 2027 with call for papers open today. Finally, for each conference, apply individually for the it with the talk just created.\"}";
+				"{\"prompt\":\"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
+				
+		//String payload =
+			//	"{\"prompt\":\"Please create a talk with some cool title (max 60 charachters long) and description (max 700 charachters long) about using Spring AI on Amazon Bedrock AgentCore service. Then provide me with the list of conferences including their ids with Java topic hapenning in 2026 and 2027 with call for papers open today. Finally, for each conference, apply individually for the it with the talk just created.\"}";
 
 		
 		var httpClient=ApacheHttpClient.builder()

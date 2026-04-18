@@ -29,7 +29,8 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-		<spring-ai.version>2.0.0-M3</spring-ai.version>
+		<spring-ai.version>2.0.0-M4</spring-ai.version>
+		<spring-ai-agentcore-version>1.0.0</spring-ai-agentcore-version>	
 	</properties>
 	<repositories>
 		<repository>
@@ -46,13 +47,11 @@
 		-->
 		<dependency>
     		<groupId>org.springaicommunity</groupId>
-    		<artifactId>spring-ai-bedrock-agentcore-starter</artifactId>
-			<version>1.0.0-RC5</version>
+    		<artifactId>spring-ai-agentcore-runtime-starter</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.springaicommunity</groupId>
-		    <artifactId>spring-ai-bedrock-agentcore-memory</artifactId>
-		    <version>1.0.0-RC7</version>
+		    <artifactId>spring-ai-agentcore-memory</artifactId>
 		    <scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -97,6 +96,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+		   <dependency>
+	            <groupId>org.springaicommunity</groupId>
+	            <artifactId>spring-ai-agentcore-bom</artifactId>
+	            <version>${spring-ai-agentcore-version}</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+		    </dependency>
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
 				<artifactId>bom</artifactId>

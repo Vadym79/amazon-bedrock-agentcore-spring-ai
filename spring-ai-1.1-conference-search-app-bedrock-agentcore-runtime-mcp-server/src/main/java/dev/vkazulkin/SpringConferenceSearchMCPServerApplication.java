@@ -12,10 +12,10 @@ import dev.vkazulkin.conference.ConferenceSearchTools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
-public class SpringMcpConferenceSearchServerApplication {
+public class SpringConferenceSearchMCPServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringMcpConferenceSearchServerApplication.class, args);
+		SpringApplication.run(SpringConferenceSearchMCPServerApplication.class, args);
 	}
 
 	@Bean
