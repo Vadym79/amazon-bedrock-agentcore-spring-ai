@@ -26,9 +26,9 @@ public class CreateConferenceApplication implements RequestHandler<APIGatewayPro
 			try {
 				var requestBody = requestEvent.getBody();
 				logger.info("request body: "+requestBody);
-				var conferenceApplications = objectMapper.readValue(requestBody, ConferenceApplication.class);
+				var conferenceApplication = objectMapper.readValue(requestBody, ConferenceApplication.class);
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.CREATED)
-						.withBody("application = " + conferenceApplications + " created");
+						.withBody("application = " + conferenceApplication + " created");
 			} catch (Exception e) {
 				return new APIGatewayProxyResponseEvent().withStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR)
 						.withBody("Internal Server Error :: " + e.getMessage());

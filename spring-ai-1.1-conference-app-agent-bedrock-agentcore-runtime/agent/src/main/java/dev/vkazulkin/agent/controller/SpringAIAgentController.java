@@ -213,10 +213,10 @@ public class SpringAIAgentController {
 
 	
 	private String getMCPServerEndpoint() {
-		if(AGENTCORE_RUNTIME_ID.length()!=0) {
+		if(!AGENTCORE_RUNTIME_ID.isBlank()) {
 			return "https://bedrock-agentcore." + awsRegion + ".amazonaws.com/runtimes/"
 			     + AGENTCORE_RUNTIME_ID + "/invocations?qualifier=DEFAULT&accountId=" + this.getAccountId();
-		} else if (AGENTCORE_GATEWAY_URL.length() !=0) {
+		} else if (!AGENTCORE_GATEWAY_URL.isBlank()) {
 			return AGENTCORE_GATEWAY_URL;
 		}
 		else throw new RuntimeException(" no AgentCore Runtime Id or AgentCore Gateway URL defined");
