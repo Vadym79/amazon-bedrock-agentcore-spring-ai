@@ -125,7 +125,7 @@ public class GatewayTargetStack extends Stack {
         	                       .method(ApiGatewayHttpMethod.GET)
         	                       .name("get-talks-by-title-substring")
         	                       .path("/talks/{titleSubstring}")
-        	                       .description("get application talk by its title substring.")
+        	                       .description("get talks by their title substring")
         	                       .build()))
         	                 .build())
            .restApi(RestApi.fromRestApiId(this, "APIGATEWAY-ID", restApiId)).stage(restApiStageName).build()))
