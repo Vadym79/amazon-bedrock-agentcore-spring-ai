@@ -19,13 +19,13 @@ import io.modelcontextprotocol.client.McpSyncClient;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ConferenceConfig.class)
-public class EmbabelConferenceApplicationOnAgentCore {
+public class EmbabelConferenceApplication {
 
 	@Autowired
     private McpToolService mcpToolService;
 	
 	public static void main(String[] args) {
-			SpringApplication.run(EmbabelConferenceApplicationOnAgentCore.class, args);
+			SpringApplication.run(EmbabelConferenceApplication.class, args);
 	}
 	
 	

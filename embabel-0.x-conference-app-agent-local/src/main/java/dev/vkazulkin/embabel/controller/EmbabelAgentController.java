@@ -18,7 +18,6 @@ import dev.vkazulkin.embabel.agent.CreateTalksAndApplyForConferencesAgent;
 import dev.vkazulkin.embabel.agent.SearchForTalksAndApplyForConferencesAgent;
 import dev.vkazulkin.embabel.domain.Domain;
 
-
 @RestController
 public class EmbabelAgentController {
 
@@ -82,7 +81,7 @@ public class EmbabelAgentController {
 	
 	private Agent getByName(String agentName) {
 	   var optionalAgent= this.agentPlatform.agents()
-			    .stream()
+			   .stream()
 			   .filter(a -> a.getName().equals(agentName))
 			   .findFirst();
 	   

@@ -35,7 +35,7 @@ public final class SearchForTalksAndApplyForConferencesAgent extends AbstractCon
 		return  context.ai()
 	           //.withDefaultLlm()
 			    .withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
-	           .createObject("""
+	            .createObject("""
 	                Create a talk search request from this user input, extracting the talk title substring. 
 	                Don't include any other information into the request.:
 	                %s""".formatted(userInput.getContent()), Domain.TalkSearchRequest.class);
