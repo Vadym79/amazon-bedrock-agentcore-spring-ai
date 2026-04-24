@@ -8,16 +8,11 @@ import software.amazon.awscdk.services.bedrock.agentcore.alpha.AgentRuntimeArtif
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.ProtocolType;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.Runtime;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.RuntimeAuthorizerConfiguration;
-import software.amazon.awscdk.services.iam.IRole;
 import software.amazon.awscdk.services.iam.Role;
 import software.constructs.Construct;
 
 public class RuntimeWithMCPStack extends Stack {
 	
-	public static IRole role;
-	
-	public static Runtime runtime;
-
     public RuntimeWithMCPStack(Construct scope, String appName,  StackProps stackProps) {
     	var id=ConventionalDefaults.stackName(appName, "agentcore-runtime");
         super(scope, id, stackProps);  
@@ -26,20 +21,21 @@ public class RuntimeWithMCPStack extends Stack {
         var ecrImageURI=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "ecrImageURIForConferenceSearchAndApplicationAgent");     		
         var roleArnForTheAgentCoreRuntime=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "roleArnForTheAgentCoreRuntime");
        
-        // The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
+        // The runtime, by default, creates ECR permissions only for the repository available in the account where the stack is being deployed
         var agentRuntimeArtifact = AgentRuntimeArtifact.fromImageUri(ecrImageURI);
-        role= Role.fromRoleArn(this,"roleArnForTheAgentCoreRuntimeRole", roleArnForTheAgentCoreRuntime);
+        var role= Role.fromRoleArn(this,"roleArnForTheAgentCoreRuntimeRole", roleArnForTheAgentCoreRuntime);
      
         // Create runtime using the built image
-        runtime = Runtime.Builder.create(this, "MCPRuntime-125")
+        var runtime = Runtime.Builder.create(this, "MCPRuntime-125")
                 .runtimeName(appName.replace("-", "_")+ "_runtime")
                 .authorizerConfiguration(RuntimeAuthorizerConfiguration.usingIAM())
-                .description("AgenCore Runtime with MCP protocol for running conference search app")
+                .description("AgenCore Runtime with MCP protocol for running conference app")
                 .protocolConfiguration(ProtocolType.HTTP)
                 .agentRuntimeArtifact(agentRuntimeArtifact)
                 .executionRole(role)
                 .build();
         
-        CfnOutput.Builder.create(this, "RuntimeIdOutput").value(runtime.getAgentRuntimeId()).build();           
+        CfnOutput.Builder.create(this, "RuntimeIdOutput").value(runtime.getAgentRuntimeId()).build();
+        CfnOutput.Builder.create(this, "RuntimeARNOutput").value(runtime.getAgentRuntimeArn()).build();
      }  
 }

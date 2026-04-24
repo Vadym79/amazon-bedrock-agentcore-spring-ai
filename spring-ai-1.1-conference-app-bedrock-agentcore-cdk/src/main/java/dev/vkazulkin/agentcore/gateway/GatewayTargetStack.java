@@ -131,7 +131,7 @@ public class GatewayTargetStack extends Stack {
            .restApi(RestApi.fromRestApiId(this, "APIGATEWAY-ID", restApiId)).stage(restApiStageName).build()))
            .credentialProviderConfigurations(apiKeyProviderConfigs)
            .gatewayTargetName("apigateway-target")
-           .description("Amazon ApiGateway Target ")
+           .description("Amazon ApiGateway Target")
            .gateway(gateway)
            .build();
           

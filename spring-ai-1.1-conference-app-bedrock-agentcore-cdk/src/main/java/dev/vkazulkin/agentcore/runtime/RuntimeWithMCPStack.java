@@ -30,7 +30,7 @@ public class RuntimeWithMCPStack extends Stack {
         var ecrImageURI=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "ecrImageURIForConferenceSearchAndApplicationAppAsMCPServer");     		
         var roleArnForTheAgentCoreRuntime=ConventionalDefaults.getContextVariableValueWithReplacedAccountId(this, "roleArnForTheAgentCoreRuntime");
        
-        // The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
+        // The runtime, by default, creates ECR permissions only for the repository available in the account where the stack is being deployed
         var agentRuntimeArtifact = AgentRuntimeArtifact.fromImageUri(ecrImageURI);
         role= Role.fromRoleArn(this,"roleArnForTheAgentCoreRuntimeRole", roleArnForTheAgentCoreRuntime);
      

@@ -10,22 +10,45 @@ import software.amazon.awssdk.services.bedrockagentcore.BedrockAgentCoreClient;
 import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeRequest;
 import software.amazon.awssdk.services.sts.StsClient;
 
-
-public class InvokeRuntimeAgent {
+class InvokeRuntimeAgent {
 
 	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_ac_conference_application_runtime-a00QWV3i7t";
 	
-	public static void main(String[] args) throws Exception {
+	void main() throws Exception {
 
-		String payload =
-			"{\"prompt\":\"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference.\"}";
-
-		//String payload =
-			//	"{\"prompt\":\"Please create a talk with some cool title (max 60 charachters long) and description (max 700 charachters long) about using Spring AI on Amazon Bedrock AgentCore service. Then provide me with the list of conferences including their ids with Java topic hapenning in 2027 with call for papers open today. Finally, for each conference, apply individually for the it with the talk just created.\"}";
-
-		//String payload =
-			//	"{\"prompt\":\"You recently applied for some conferences for me. Can you provide me with the details?.\"}";
-				
+		var payload =
+				"""
+				{
+				"prompt":
+				"Please provide me with the list of conferences, including their IDs, with the Java topic happening 
+				in 2027, with the call for papers open today. 
+				Also, provide me with the list of my talks with this topic in the title. 
+				Finally, for each conference and talk retrieved, apply individually for the conference."
+				}
+				""";
+			
+		/*
+		var payload =
+				"""
+				{
+				"prompt":
+				"Please create a talk with some cool title (max 60 characters long) and 
+				description (max 700 characters long) about using Spring AI on Amazon Bedrock AgentCore service. 
+				Then provide me with the list of conferences, including their IDs with Java topic happening 
+				in 2026 and 2027, with call for papers open today. 
+				Finally, for each conference, apply individually for it with the talk just created."
+				}
+				""";
+		*/
+		/*
+		var payload =
+				""" 
+				{
+				"prompt":
+				"You recently applied for some conferences for me. Can you provide me with the details?"
+				}
+				""";
+		*/		
 		var httpClient=ApacheHttpClient.builder()
 			    .connectionTimeout(Duration.ofMinutes(5))
 			    .socketTimeout(Duration.ofMinutes(5))
@@ -43,21 +66,21 @@ public class InvokeRuntimeAgent {
 				.invokeAgentRuntime(invokeAgentRuntimeRequest)) {
 			var text = new String(responseStream.readAllBytes(), StandardCharsets.UTF_8);
 
-			System.out.println(text);
+			IO.println(text);
 		}
 
 	}
 
     private static String replaceAWSAccountID(String arn ) {
     	var replacedArn = arn.replace("{AWS_ACCOUNT_ID}", getAccountId());
-    	System.out.println("replaced runtime arn "+replacedArn);
+    	IO.println("replaced runtime arn "+replacedArn);
     	return replacedArn;
     }
 
 	private static String getAccountId() {
 		var stsClient = StsClient.builder().region(Region.US_EAST_1).build();
 	    var awsAccountId= stsClient.getCallerIdentity().account();
-	    System.out.println("AWS Account Id "+awsAccountId);
+	    IO.println("AWS Account Id "+awsAccountId);
 	    return awsAccountId;
 	}
 }

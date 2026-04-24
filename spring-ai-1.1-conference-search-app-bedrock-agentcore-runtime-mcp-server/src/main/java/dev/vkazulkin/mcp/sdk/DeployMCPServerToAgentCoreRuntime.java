@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.bedrockagentcorecontrol.model.NetworkMode
 import software.amazon.awssdk.services.bedrockagentcorecontrol.model.ProtocolConfiguration;
 import software.amazon.awssdk.services.bedrockagentcorecontrol.model.ServerProtocol;
 
-public class DeployMCPServerToAgentCoreRuntime {
+class DeployMCPServerToAgentCoreRuntime {
 
 	private static final String IAM_ROLE_ARN = "{IAM_ARN_ROLE}";
 	private static final String CONTAINER_URI = "{AWS_ACCOUNT_ID}.dkr.ecr.{AWS_REGION}.amazonaws.com/{ECR_REPO}";
@@ -39,7 +39,7 @@ public class DeployMCPServerToAgentCoreRuntime {
 				.roleArn(IAM_ROLE_ARN).networkConfiguration(getNetworkConfiguration())
 				.agentRuntimeArtifact(getAgentRuntimeArtifact(CREATE_AGENT_RUNTIME_CONTAINER_URI)).build();
 		var response = bedrockAgentCoreControlClient.createAgentRuntime(request);
-		System.out.println("Create Agent Runtime response: " + response);
+		IO.println("Create Agent Runtime response: " + response);
 	}
 
 	private static void updateAgentRuntime() {
@@ -50,7 +50,7 @@ public class DeployMCPServerToAgentCoreRuntime {
 				.roleArn(IAM_ROLE_ARN).networkConfiguration(getNetworkConfiguration())
 				.agentRuntimeArtifact(getAgentRuntimeArtifact(UPDATE_AGENT_RUNTIME_CONTAINER_URI)).build();
 		var response = bedrockAgentCoreControlClient.updateAgentRuntime(request);
-		System.out.println("Update Agent Runtime response: " + response);
+		IO.println("Update Agent Runtime response: " + response);
 	}
 
 	private static AuthorizerConfiguration getAuthorizerConfiguration() {
@@ -73,7 +73,7 @@ public class DeployMCPServerToAgentCoreRuntime {
 				ContainerConfiguration.builder().containerUri(containerURI).build());
 	}
 
-	public static void main(String[] args) throws Exception {
+	void main() throws Exception {
 		// createAgentRuntime();
 		updateAgentRuntime();
 	}

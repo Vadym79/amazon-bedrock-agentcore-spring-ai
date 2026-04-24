@@ -33,7 +33,7 @@ public class InvokeRuntimeAgent {
 				.invokeAgentRuntime(invokeAgentRuntimeRequest)) {
 			var text = new String(responseStream.readAllBytes(), StandardCharsets.UTF_8);
 
-			System.out.println(text);
+			IO.println(text);
 		}
 
 	}
