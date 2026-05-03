@@ -99,7 +99,7 @@ public class SpringAIAgentController {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
-				.maxTokens(2000).build();
+				.maxTokens(2000);
 
 		this.chatClient = builder.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
@@ -124,7 +124,7 @@ public class SpringAIAgentController {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
-				.maxTokens(2000).build();
+				.maxTokens(2000);
 
 		this.chatClient = builder.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
@@ -148,7 +148,7 @@ public class SpringAIAgentController {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("global.anthropic.claude-sonnet-4-6")
-				.maxTokens(2000).build();
+				.maxTokens(2000);
 
 		//logger.info("ltm advisors: "+ltmAdvisors);
 	
