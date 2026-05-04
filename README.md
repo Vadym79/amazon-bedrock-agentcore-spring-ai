@@ -1,2 +1,3 @@
 Samples of [Spring AI](https://spring.io/projects/spring-ai) applications running on [Amazon Bedrock AgentCore](https://aws.amazon.com/bedrock/agentcore/) services like AgentCore Runtime with MCP capabilities of the AgentCore Gateway. 
-Some examples also use [Spring AI AgentCore](https://github.com/spring-ai-community/spring-ai-agentcore) integration. 
+Some examples also use [Spring AI AgentCore](https://github.com/spring-ai-community/spring-ai-agentcore) integration.    
+Please read my article series [Building AI Agents with Spring AI and Amazon Bedrock AgentCore](https://vkazulkin.com/series/building-ai-agents-with-spring-ai-and-amazon-bedrock-agentcore/) were I give step-by-step explanation about how build, deploy, and run the AI agents with Spring AI and Amazon Bedrock AgentCore.
