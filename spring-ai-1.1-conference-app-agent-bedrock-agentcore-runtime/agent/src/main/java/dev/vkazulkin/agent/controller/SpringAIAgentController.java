@@ -85,7 +85,7 @@ public class SpringAIAgentController {
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
-				.model("global.anthropic.claude-sonnet-4-6")
+				.model("us.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
 		this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
@@ -126,9 +126,12 @@ public class SpringAIAgentController {
 			}       
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
-			var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
+			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 
-			return this.chatClient.prompt().user(prompt).toolCallbacks(toolCallbacks)
+			return this.chatClient.prompt().user(prompt)
+					.tools(new DateTimeTools())
+					.toolCallbacks(syncMcpToolCallbackProvider.getToolCallbacks())
+					//.toolCallbacks(toolCallbacks)
 					.call().content();
 		}
 	}
@@ -162,9 +165,12 @@ public class SpringAIAgentController {
 				 */
 				.build();
 
-		var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
+		//var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 		var content = this.chatClient.prompt().user(prompt)
-				.toolCallbacks(toolCallbacks).stream().content();
+				 //.toolCallbacks(toolCallbacks)
+				 .tools(new DateTimeTools())
+				 .toolCallbacks(asyncMcpToolCallbackProvider.getToolCallbacks())
+				.stream().content();
 
 		// client.close();
 		return content;
@@ -179,6 +185,7 @@ public class SpringAIAgentController {
 	 * @param array2
 	 * @return array containing the elements of the both arrays
 	 */
+	@SuppressWarnings("unused")
 	private static <T> T[] concatWithStream(T[] array1, T[] array2) {
 	    return Stream.concat(Arrays.stream(array1), Arrays.stream(array2))
 	      .toArray(size -> (T[]) Array.newInstance(array1.getClass().getComponentType(), size));
@@ -352,6 +359,11 @@ public class SpringAIAgentController {
 			var responseMap = objectMapper.readValue(responseString, new TypeReference<Map<String, Object>>() {});
 			var token = (String) responseMap.get("access_token");
 			logger.info("token : " + token);
+			
+			var expiresInSeconds = (Integer) responseMap.get("expires_in");
+			logger.info("token expires in seconds: " + expiresInSeconds);
+			// add handling of the auth token expiration
+
 			return token;
 		}
 	}
