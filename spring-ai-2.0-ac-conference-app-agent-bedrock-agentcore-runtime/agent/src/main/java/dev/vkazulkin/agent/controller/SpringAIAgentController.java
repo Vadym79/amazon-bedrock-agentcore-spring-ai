@@ -192,10 +192,9 @@ public class SpringAIAgentController {
 		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
-			var toolsResult = client.listTools();
-			for (var tool : toolsResult.tools()) {
-				logger.info("tool found " + tool);
-			}       
+
+			client.listTools().tools().forEach(tool -> logger.info("tool found: " + tool));
+			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
 			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
@@ -225,10 +224,8 @@ public class SpringAIAgentController {
 		}
 		var client = McpClient.async(getMcpClientTransport(token)).build();
 		client.initialize();
-		var toolsResult = client.listTools(); 
-		for (var tool : toolsResult.block().tools()) { 
-			logger.info("tool found " + tool); 
-		}
+
+		client.listTools().block().tools().forEach(tool -> logger.info("tool found: " + tool));
 		 
 		var asyncMcpToolCallbackProvider = AsyncMcpToolCallbackProvider.builder().mcpClients(client)
 				/*

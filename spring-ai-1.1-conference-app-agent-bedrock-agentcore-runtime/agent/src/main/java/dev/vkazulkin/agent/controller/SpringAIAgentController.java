@@ -29,7 +29,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
-
+import org.springframework.ai.mcp.*;
+import io.modelcontextprotocol.spec.McpSchema.Tool;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -120,10 +121,9 @@ public class SpringAIAgentController {
 		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
-			var toolsResult = client.listTools();
-			for (var tool : toolsResult.tools()) {
-				logger.info("tool found " + tool);
-			}       
+		
+			client.listTools().tools().forEach(tool -> logger.info("tool found: " + tool));
+			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
 			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
@@ -151,19 +151,19 @@ public class SpringAIAgentController {
 		}
 		var client = McpClient.async(getMcpClientTransport(token)).build();
 		client.initialize();
-		var toolsResult = client.listTools(); 
-		for (var tool : toolsResult.block().tools()) { 
-			logger.info("tool found " + tool); 
-		}
+
+		client.listTools().block().tools().forEach(tool -> logger.info("tool found: " + tool));
 		 
 		var asyncMcpToolCallbackProvider = AsyncMcpToolCallbackProvider.builder().mcpClients(client)
 				/*
-				 * .toolFilter(new McpToolFilter() {
-				 * 
-				 * @Override public boolean test(McpConnectionInfo info, Tool tool) { return
-				 * tool.name().toLowerCase().contains("order"); } })
-				 */
-				.build();
+				 .toolFilter(new McpToolFilter() {				 
+					  @Override public boolean test(McpConnectionInfo info, Tool tool) { 
+				      return tool.name().toLowerCase().contains("Conference_Search_Tool_By_Topic"); 
+			        } 
+				  }
+				 )
+				*/
+			.build();
 
 		//var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 		var content = this.chatClient.prompt().user(prompt)
