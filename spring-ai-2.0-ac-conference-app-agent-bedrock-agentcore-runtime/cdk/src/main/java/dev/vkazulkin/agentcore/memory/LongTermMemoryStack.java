@@ -9,6 +9,7 @@ import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.Memory;
 import software.amazon.awscdk.services.bedrock.agentcore.alpha.MemoryStrategy;
+import software.amazon.awscdk.services.bedrock.agentcore.alpha.ManagedStrategyProps;
 import software.constructs.Construct;
 
 public class LongTermMemoryStack extends Stack {
@@ -25,7 +26,13 @@ public class LongTermMemoryStack extends Stack {
         	  .expirationDuration(Duration.days(7))
         	  .memoryStrategies(List.of(MemoryStrategy.usingBuiltInSummarization(), MemoryStrategy.usingBuiltInSemantic()))
         	  .build();   
-               
+        
+        /*
+        MemoryStrategy.usingSemantic(ManagedStrategyProps.builder()
+        		.name("name")
+        		.namespaces(List.of("namespace1", "namespcace2"))
+        		.build());
+        */       
         CfnOutput.Builder.create(this, "LongTermMemoryIdOutput").value(memory.getMemoryId()).build();           
      }  
 }
