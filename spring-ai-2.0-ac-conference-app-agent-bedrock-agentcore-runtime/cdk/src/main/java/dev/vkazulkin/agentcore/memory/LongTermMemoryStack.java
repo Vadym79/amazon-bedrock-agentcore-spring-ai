@@ -30,7 +30,7 @@ public class LongTermMemoryStack extends Stack {
         /*
         MemoryStrategy.usingSemantic(ManagedStrategyProps.builder()
         		.name("name")
-        		.namespaces(List.of("namespace1", "namespcace2"))
+        		.namespaces(List.of("namespace1", "namespace2"))
         		.build());
         */       
         CfnOutput.Builder.create(this, "LongTermMemoryIdOutput").value(memory.getMemoryId()).build();           
