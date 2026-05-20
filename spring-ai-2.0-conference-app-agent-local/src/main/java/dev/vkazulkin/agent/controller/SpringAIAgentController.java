@@ -5,9 +5,7 @@ import java.lang.reflect.Array;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,18 +16,16 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springaicommunity.agentcore.annotation.AgentCoreInvocation;
-import org.springaicommunity.agentcore.context.AgentCoreContext;
-import org.springaicommunity.agentcore.memory.longterm.AgentCoreLongTermMemoryAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import tools.jackson.core.type.TypeReference;
@@ -73,135 +69,66 @@ public class SpringAIAgentController {
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
 	
+	private final String awsRegion;
+	
+	private final CognitoIdentityProviderClient cognitoClient;
+			
+	private final StsClient stsClient;
+	  	
 	private final ChatClient chatClient;
 
-	private String awsRegion;
-		
-	private final CognitoIdentityProviderClient cognitoClient;
-	
-	private final StsClient stsClient;
-	  
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-
-	// to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
-	private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
 	
 	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
 
-	
-	/**
-	 * use this constructor to inject the short-term memory (or no memory)
-	 * @param builder
-	 * @param chatMemory
-	 */
-	/*
 	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory, @Value("${aws.region}") String awsRegion) {
 		var options = ToolCallingChatOptions.builder()
 				 //.model("amazon.nova-pro-v1:0")
 				.model("us.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000);
 
-		this.chatClient = builder.defaultOptions(options)
+		this.chatClient = builder
+				//.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+				.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
-				//short term memory
-				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())	
 				.build();
-				
+
 		this.awsRegion=awsRegion;
 		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
-
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();		
 	}
-	*/
-	
-	/** use this constructor to inject the long-term memory
+
+	/**
+	 * agrentcore runtime ping endpoint
 	 * 
-	 * @param builder
-	 * @param agentCoreMemory
+	 * @return health status
 	 */
-	/*
-	public SpringAIAgentController(ChatClient.Builder builder, AgentCoreMemory agentCoreMemory, @Value("${aws.region}") String awsRegion) {
-		var options = ToolCallingChatOptions.builder()
-				 //.model("amazon.nova-pro-v1:0")
-				.model("us.anthropic.claude-sonnet-4-6")
-				.maxTokens(2000);
-
-		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
-				//long and short-term memorories
-				.defaultAdvisors(agentCoreMemory.advisors)		
-				.build();
-		
-		this.awsRegion=awsRegion;
-		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
-	}
-    */
-	
-	/**
-	 * use this constructor to inject the short-term, long-term or no memory
-	 * @param builder
-	 * @param chatMemory
-	 */
-	public SpringAIAgentController(ChatClient.Builder builder, ChatMemory chatMemory,
-			List<AgentCoreLongTermMemoryAdvisor> ltmAdvisors, @Value("${aws.region}") String awsRegion) {
-		var options = ToolCallingChatOptions.builder()
-				 //.model("amazon.nova-pro-v1:0")
-				.model("us.anthropic.claude-sonnet-4-6")
-				.maxTokens(2000);
-
-		//logger.info("ltm advisors: "+ltmAdvisors);
-	
-		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
-				.defaultAdvisors(this.getAllMemoryAdvisors(chatMemory, ltmAdvisors))	
-				.build();
-				
-		this.awsRegion=awsRegion;
-		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
-	}
-	
-	/**
-	 * get all advisors from chat memory and long term memory
-	 * @param chatMemory
-	 * @param ltmAdvisors
-	 * @return
-	 */
-	private List<Advisor> getAllMemoryAdvisors(ChatMemory chatMemory, List<AgentCoreLongTermMemoryAdvisor> ltmAdvisors) { 
-		Advisor chatMemoryAdvisor= MessageChatMemoryAdvisor.builder(chatMemory).build();
-		var cltmAdvisors=(List<Advisor>)(List<?>) ltmAdvisors;
-		var allAdvisors=new ArrayList<Advisor>();
-		allAdvisors.addAll(cltmAdvisors);
-		if(chatMemoryAdvisor!=null) {
-			allAdvisors.add(chatMemoryAdvisor);
-		}
-		logger.info("all advisors: "+allAdvisors);
-		return allAdvisors;
+	@GetMapping("/ping")
+	public String ping() {
+		return "{\"status\": \"healthy\"}";
 	}
 
 	/**
-	 * POST method which has a prompt as an input parameter and outputs the agent response synchronously
+	 * GET method which has a prompt as an input parameter and outputs the agent response synchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return agent answer
 	 */
-	@AgentCoreInvocation
-	public String invokeSync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
-		logger.info("invocations endpoint with prompt: " + promptRequest.prompt());
+	@GetMapping(value = "/conference-sync", consumes = "text/plain")
+	public String conferenceSearchSync(@RequestParam String prompt) {
+		
+		logger.info("invocations endpoint with prompt: " + prompt);
 		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
-
+			
 			client.listTools().tools().forEach(tool -> logger.info("tool found: " + tool));
 			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
 			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 
-		   
-			return this.chatClient.prompt().user(promptRequest.prompt())
-					.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
+			return this.chatClient.prompt().user(prompt)
 					 .tools(new DateTimeTools())
 					 .toolCallbacks(syncMcpToolCallbackProvider.getToolCallbacks())
 					 //.toolCallbacks(toolCallbacks)
@@ -210,23 +137,24 @@ public class SpringAIAgentController {
 	}
 
 	/**
-	 *  POST method which has a prompt as an input parameter and outputs the agent response asynchronously
+	 *  GET method which has a prompt as an input parameter and outputs the agent response asynchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return asynchronous agent answer
 	 */
-	//@AgentCoreInvocation
-	public Flux<String> invoceAsync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
-		logger.info("invocations endpoint with prompt: " + promptRequest.prompt());
+	@GetMapping(value = "/conference", consumes = "text/plain")
+	public Flux<String> conferenceSearch(@RequestParam String prompt) {
+		logger.info("invocations endpoint with prompt: " + prompt);
+
 		var token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
 		var client = McpClient.async(getMcpClientTransport(token)).build();
 		client.initialize();
-
+		
 		client.listTools().block().tools().forEach(tool -> logger.info("tool found: " + tool));
-		 
+
 		var asyncMcpToolCallbackProvider = AsyncMcpToolCallbackProvider.builder().mcpClients(client)
 				/*
 				 * .toolFilter(new McpToolFilter() {
@@ -237,13 +165,11 @@ public class SpringAIAgentController {
 				.build();
 
 		//var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
-		var content = this.chatClient.prompt()
-				 .user(promptRequest.prompt())
-				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
-				  .tools(new DateTimeTools())
-				  .toolCallbacks(asyncMcpToolCallbackProvider.getToolCallbacks())
-				 //.toolCallbacks(toolCallbacks)
-				  .stream().content();
+		var content = this.chatClient.prompt().user(prompt)
+				 .tools(new DateTimeTools())
+				 .toolCallbacks(asyncMcpToolCallbackProvider.getToolCallbacks())
+				//.toolCallbacks(toolCallbacks)
+				.stream().content();
 
 		// client.close();
 		return content;
@@ -264,6 +190,12 @@ public class SpringAIAgentController {
 	      .toArray(size -> (T[]) Array.newInstance(array1.getClass().getComponentType(), size));
 	}
 
+	/**
+	 * returns streamable http mcp client transport
+	 * 
+	 * @param token -bearer authorization token
+	 * @return streamable http mcp client transport
+	 */
 	/**
 	 * returns streamable http mcp client transport
 	 * 
@@ -351,6 +283,7 @@ public class SpringAIAgentController {
 	}
 
 	
+	
 	/**
 	 * returns cognito user pool with specific user name
 	 * 
@@ -398,7 +331,6 @@ public class SpringAIAgentController {
 	}
 
 	
-
 	/** returns cognito user pool client type for the given cognito user pool client
 	 * 
 	 * @param userPoolClient- cognito user pool client
@@ -428,9 +360,8 @@ public class SpringAIAgentController {
 			logger.info("token : " + token);
 			
 			var expiresInSeconds = (Integer) responseMap.get("expires_in");
-			logger.info("token expires in seconds : " + expiresInSeconds);
+			logger.info("token expires in seconds: " + expiresInSeconds);
 			// add handling of the auth token expiration
-
 			return token;
 		}
 	}

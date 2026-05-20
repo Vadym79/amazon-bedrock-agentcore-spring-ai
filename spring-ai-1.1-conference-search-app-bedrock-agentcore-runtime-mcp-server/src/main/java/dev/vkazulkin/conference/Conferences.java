@@ -21,12 +21,11 @@ public record Conferences(Set<Conference> conferences) {
 	}
 	
 	
-	public static Set<Conference> search(String topic, Conferences conferences) {
+	public static void search(String topic, Conferences conferences) {
 		System.out.println("search topic " + topic);
 		Set<Conference> foundConferences = conferences.conferences().stream().filter(c -> c.topics().contains(topic))
 				.collect(Collectors.toSet());
 
 		System.out.println("return list of conferences: " + foundConferences);
-		return foundConferences;
 	}
 }

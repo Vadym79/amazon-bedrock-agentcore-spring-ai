@@ -12,7 +12,7 @@
 	<groupId>dev.vkazulkin</groupId>
 	<artifactId>spring-ai-2.0-conference-search-app-bedrock-agentcore-runtime-mcp-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-ai-1.1-conference-search-app-bedrock-agentcore-runtime-mcp-server</name>
+	<name>spring-ai-2.0-conference-search-app-bedrock-agentcore-runtime-mcp-server</name>
 	<description>Spring AI 2.0 MCP Conference Search App MCP Server on Amazon Bedrock Agentcore Runtime</description>
 	<url />
 	<licenses>

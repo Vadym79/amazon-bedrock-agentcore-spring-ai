@@ -2,7 +2,7 @@ package dev.vkazulkin.agent.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ public class DateTimeTools {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DateTimeTools.class);
 
-    @McpTool(name="Get_The_Current_Date", description = "Get the current date ")
+    @Tool(name="Get_The_Current_Date", description = "Get the current date")
     String getLocalDate() {
         var localDate= LocalDate.now().toString();
         logger.info("called tool to return the local date which is "+localDate);

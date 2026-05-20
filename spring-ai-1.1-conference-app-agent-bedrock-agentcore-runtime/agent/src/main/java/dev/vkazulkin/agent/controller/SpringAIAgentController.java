@@ -89,7 +89,8 @@ public class SpringAIAgentController {
 				.model("us.anthropic.claude-sonnet-4-6")
 				.maxTokens(2000).build();
 
-		this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+		this.chatClient = builder
+				//.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
 				.defaultOptions(options)
 				// .defaultSystem(SYSTEM_PROMPT)
 				.build();
