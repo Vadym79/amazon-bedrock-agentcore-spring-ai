@@ -29,6 +29,7 @@ import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.support.ToolCallbacks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,7 +82,8 @@ public class SpringAIAgentController {
 	
 	private final StsClient stsClient;
 	  
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	// to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
 	private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
