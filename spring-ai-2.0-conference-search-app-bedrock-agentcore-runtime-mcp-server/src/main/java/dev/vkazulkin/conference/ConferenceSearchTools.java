@@ -36,7 +36,7 @@ public class ConferenceSearchTools {
 		logger.info("earliest start date: "+earliestStartDate);
 		logger.info("latest start date: "+latestStartDate);
 		
-		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
+		var foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
 				.filter(c -> isConferenceStartDateInDateRange(c, earliestStartDate, latestStartDate))
 			    .collect(Collectors.toSet());
 
@@ -55,7 +55,7 @@ public class ConferenceSearchTools {
 		logger.info("latest start date: "+latestStartDate);
 		logger.info("call for papers still open on date: "+callForPapersStillOpenOnThisDate);
 		
-		Set<Conference> foundConferences = this.conferences.stream()
+		var foundConferences = this.conferences.stream()
 				.filter(c -> c.topics().contains(topic))
 				.filter(c -> isConferenceStartDateInDateRange(c, earliestStartDate, latestStartDate))
 			    .filter(c -> isCallForPapersOpenOnThisDate(c, callForPapersStillOpenOnThisDate))
@@ -67,8 +67,8 @@ public class ConferenceSearchTools {
 
 	@McpTool(name = "Conference_Search_Tool_By_Topic", description = "Search for the conference list for exactly one topic provided")
 	public Set<Conference> search(@McpToolParam(description = "conference topic") String topic) {
-		logger.info("search topic " + topic);
-		Set<Conference> foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
+		logger.info("search topic: " + topic);
+		var foundConferences = this.conferences.stream().filter(c -> c.topics().contains(topic))
 				.collect(Collectors.toSet());
 
 		logger.info("return list of conferences: " + foundConferences);
