@@ -85,6 +85,10 @@ public class SpringAIAgentController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
 
+	private static final String SYSTEM_PROMPT="""
+			You'are the agent capable of answering  thequestions about the conferences and talks which match a certain criteria
+			and apply those talks for the conferences.
+			""";
 	
 	/**
 	 * use this constructor to inject the short-term memory (or no memory)
@@ -150,7 +154,7 @@ public class SpringAIAgentController {
 		//logger.info("ltm advisors: "+ltmAdvisors);
 	
 		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
+				 .defaultSystem(SYSTEM_PROMPT)
 				.defaultAdvisors(this.getAllMemoryAdvisors(chatMemory, ltmAdvisors))	
 				.build();
 				
