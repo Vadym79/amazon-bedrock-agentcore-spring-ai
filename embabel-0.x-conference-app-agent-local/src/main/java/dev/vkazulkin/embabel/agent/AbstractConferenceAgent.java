@@ -17,6 +17,7 @@ import com.embabel.agent.core.ToolGroupDescription;
 import com.embabel.agent.core.ToolGroupPermission;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.agent.tools.mcp.McpToolGroup;
+import com.embabel.agent.tools.mcp.ToolCallContextMcpMetaConverter;
 import com.embabel.common.ai.model.LlmOptions;
 
 import dev.vkazulkin.embabel.config.ConferenceConfig;
@@ -85,16 +86,22 @@ abstract sealed class AbstractConferenceAgent
 	}
 	
 	protected ToolGroup getMcpToolGroupByName(String name) {
+		var  toolGroupDescription=  ToolGroupDescription.Companion.invoke(
+                "A collection of tools to interact with the MCP conference search service",
+                "location",
+                ""
+        );
+		
+		var noOp= ToolCallContextMcpMetaConverter.Companion.noOp();
+		
 		return new McpToolGroup(
-                ToolGroupDescription.Companion.invoke(
-                        "A collection of tools to interact with the MCP conference search service",
-                        "location"
-                ),
+                toolGroupDescription,
                 "Vadym",
                 name,
                 Set.of(ToolGroupPermission.INTERNET_ACCESS),
                 List.of(mcpClient),
-                callback -> filterMcpTool(callback, name)
+                callback -> filterMcpTool(callback, name),
+                noOp
       );
 	}
 	

@@ -1,13 +1,10 @@
 package dev.vkazulkin.agent.controller;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -17,12 +14,10 @@ import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
-import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -129,9 +124,9 @@ public class SpringAIAgentController {
 			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 
 			return this.chatClient.prompt().user(prompt)
-					 .tools(new DateTimeTools())
-					 .toolCallbacks(syncMcpToolCallbackProvider.getToolCallbacks())
-					 //.toolCallbacks(toolCallbacks)
+					 .tools( t-> t
+						.instances(new DateTimeTools())
+						.callbacks(syncMcpToolCallbackProvider.getToolCallbacks()))	
 					 .call().content();
 		}
 	}
@@ -166,29 +161,15 @@ public class SpringAIAgentController {
 
 		//var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
 		var content = this.chatClient.prompt().user(prompt)
-				 .tools(new DateTimeTools())
-				 .toolCallbacks(asyncMcpToolCallbackProvider.getToolCallbacks())
-				//.toolCallbacks(toolCallbacks)
-				.stream().content();
+				 .tools( t-> t
+					   .instances(new DateTimeTools())
+					    .callbacks(asyncMcpToolCallbackProvider.getToolCallbacks()))	
+			     .stream().content();
 
 		// client.close();
 		return content;
 	}
 	
-	
-	/**
-	 * concatenate 2 arrays of the same type T
-	 * 
-	 * @param <T>
-	 * @param array1
-	 * @param array2
-	 * @return array containing the elements of the both arrays
-	 */
-	@SuppressWarnings("unused")
-	private static <T> T[] concatWithStream(T[] array1, T[] array2) {
-	    return Stream.concat(Arrays.stream(array1), Arrays.stream(array2))
-	      .toArray(size -> (T[]) Array.newInstance(array1.getClass().getComponentType(), size));
-	}
 
 	/**
 	 * returns streamable http mcp client transport
@@ -203,12 +184,15 @@ public class SpringAIAgentController {
 	 * @return streamable http mcp client transport
 	 */
 	private McpClientTransport getMcpClientTransport(String token) {
-		
 		var mcpServerConfig= this.getMCPServerConfig();
 		logger.info("MCP Server config: " + mcpServerConfig);
 		var headerValue = "Bearer " + token;
 		
-	    var httpRequestBuilder = HttpRequest.newBuilder().header("Authorization", headerValue);
+	    var httpRequestBuilder = HttpRequest.newBuilder()
+	    		.header("Authorization", headerValue);
+	            //.header("accept","application/json, text/event-stream")
+		        //.header("Content-Type","application/json");
+		        
 		
 		return HttpClientStreamableHttpTransport.builder(mcpServerConfig.baseUrl)
 				.connectTimeout(Duration.ofMinutes(3))
