@@ -18,10 +18,12 @@ public class SpringConferenceSearchMCPServerApplication {
 		SpringApplication.run(SpringConferenceSearchMCPServerApplication.class, args);
 	}
 
+	/*
 	@Bean
 	public List<ToolCallback> conferenceSearchTools(ConferenceSearchTools conferenceSearchTool) {
 		return List.of(ToolCallbacks.from(conferenceSearchTool));
 	}
+	*/
 	
 	@Bean
     public ObjectMapper objectMapper() {
