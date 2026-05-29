@@ -16,7 +16,7 @@ class InvokeRuntimeAgent {
 	
 	void main() throws Exception {
 
-		/*
+		
 		var payload =
 				"""
 				{
@@ -24,7 +24,7 @@ class InvokeRuntimeAgent {
 				"Please provide me with the list of conferences, including their IDs, with the Java topic happening in 2027, with the call for papers open today. Also, provide me with the list of my talks with this topic in the title. Finally, for each conference and talk retrieved, apply individually for the conference."
 				}
 				""";			
-		*/	
+			
 		/*
 		var payload =
 				"""
@@ -35,7 +35,7 @@ class InvokeRuntimeAgent {
 				""";
 		
 		*/
-		
+		/*
 		var payload =
 				""" 
 				{
@@ -43,7 +43,7 @@ class InvokeRuntimeAgent {
 				"You recently applied for some conferences for me. Can you provide me with the details?"
 				}
 				""";
-				
+		*/		
 		var httpClient=ApacheHttpClient.builder()
 			    .connectionTimeout(Duration.ofMinutes(5))
 			    .socketTimeout(Duration.ofMinutes(5))
