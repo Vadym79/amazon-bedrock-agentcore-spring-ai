@@ -71,6 +71,11 @@ public class SpringAIAgentController {
 	private final StsClient stsClient;
 	  	
 	private final ChatClient chatClient;
+	
+	private static final String SYSTEM_PROMPT="""
+			You'are the agent capable of answering  thequestions about the conferences and talks which match a certain criteria
+			and apply those talks for the conferences.
+			""";
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -85,7 +90,7 @@ public class SpringAIAgentController {
 		this.chatClient = builder
 				//.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
 				.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
+				 .defaultSystem(SYSTEM_PROMPT)
 				.build();
 
 		this.awsRegion=awsRegion;

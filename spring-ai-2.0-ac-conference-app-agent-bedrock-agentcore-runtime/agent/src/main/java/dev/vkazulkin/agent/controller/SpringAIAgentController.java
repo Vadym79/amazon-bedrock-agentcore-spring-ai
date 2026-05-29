@@ -83,13 +83,13 @@ public class SpringAIAgentController {
 	// to include custom session id into the conversation. 'actorId' or 'actorId:sessionId'
 	private final String CONVERSATION_ID="default-actor-id-12345678:default-session-id-12345678";
 	
-	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
-
 	private static final String SYSTEM_PROMPT="""
 			You'are the agent capable of answering  thequestions about the conferences and talks which match a certain criteria
 			and apply those talks for the conferences.
 			""";
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
+
 	/**
 	 * use this constructor to inject the short-term memory (or no memory)
 	 * @param builder
@@ -103,7 +103,7 @@ public class SpringAIAgentController {
 				.maxTokens(2000);
 
 		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
+				.defaultSystem(SYSTEM_PROMPT)
 				//short term memory
 				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())	
 				.build();
@@ -128,7 +128,7 @@ public class SpringAIAgentController {
 				.maxTokens(2000);
 
 		this.chatClient = builder.defaultOptions(options)
-				// .defaultSystem(SYSTEM_PROMPT)
+				 .defaultSystem(SYSTEM_PROMPT)
 				//long and short-term memorories
 				.defaultAdvisors(agentCoreMemory.advisors)		
 				.build();
