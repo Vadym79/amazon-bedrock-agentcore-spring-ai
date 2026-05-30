@@ -21,6 +21,7 @@ import org.springaicommunity.agentcore.context.AgentCoreContext;
 import org.springaicommunity.agentcore.memory.longterm.AgentCoreLongTermMemoryAdvisor;
 import org.springframework.ai.chat.client.AdvisorParams;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ChatClientAttributes;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -240,8 +241,9 @@ public class SpringAIAgentController {
 
 		var content = this.chatClient.prompt()
 				 .user(promptRequest.prompt())
-				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
-				 .advisors(AdvisorParams.toolCallAdvisorAutoRegister(false))
+				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID)
+						 .param(ChatClientAttributes.TOOL_CALL_ADVISOR_AUTO_REGISTER.getKey(), false))
+				 //.advisors(AdvisorParams.toolCallAdvisorAutoRegister(false))
 				 .tools( t-> t
 						.instances(new DateTimeTools())
 						.callbacks(asyncMcpToolCallbackProvider.getToolCallbacks()))	
