@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.agentcore.annotation.AgentCoreInvocation;
 import org.springaicommunity.agentcore.context.AgentCoreContext;
 import org.springaicommunity.agentcore.memory.longterm.AgentCoreLongTermMemoryAdvisor;
+import org.springframework.ai.chat.client.AdvisorParams;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
@@ -154,7 +155,7 @@ public class SpringAIAgentController {
 		//logger.info("ltm advisors: "+ltmAdvisors);
 	
 		this.chatClient = builder.defaultOptions(options)
-				 .defaultSystem(SYSTEM_PROMPT)
+				.defaultSystem(SYSTEM_PROMPT)				
 				.defaultAdvisors(this.getAllMemoryAdvisors(chatMemory, ltmAdvisors))	
 				.build();
 				
@@ -240,6 +241,7 @@ public class SpringAIAgentController {
 		var content = this.chatClient.prompt()
 				 .user(promptRequest.prompt())
 				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
+				 .advisors(AdvisorParams.toolCallAdvisorAutoRegister(false))
 				 .tools( t-> t
 						.instances(new DateTimeTools())
 						.callbacks(asyncMcpToolCallbackProvider.getToolCallbacks()))	
