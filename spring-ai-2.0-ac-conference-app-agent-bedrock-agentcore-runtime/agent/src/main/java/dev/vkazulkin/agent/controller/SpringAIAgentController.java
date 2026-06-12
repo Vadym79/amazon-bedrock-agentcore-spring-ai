@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.agentcore.annotation.AgentCoreInvocation;
 import org.springaicommunity.agentcore.context.AgentCoreContext;
 import org.springaicommunity.agentcore.memory.longterm.AgentCoreLongTermMemoryAdvisor;
-import org.springframework.ai.chat.client.AdvisorParams;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.ChatClientAttributes;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -200,15 +198,11 @@ public class SpringAIAgentController {
 			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
-			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
-
-		   
-			return this.chatClient.prompt().user(promptRequest.prompt())
+			return this.chatClient.prompt()
+					.user(promptRequest.prompt())
 					.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
-					 .tools( t-> t
-						   .instances(new DateTimeTools())
-						   .callbacks(syncMcpToolCallbackProvider.getToolCallbacks()))	
-					 .call().content();
+					.tools(new DateTimeTools(),syncMcpToolCallbackProvider.getToolCallbacks())
+					.call().content();
 		}
 	}
 
@@ -239,22 +233,15 @@ public class SpringAIAgentController {
 				 */
 				.build();
 
-		var content = this.chatClient.prompt()
+		return this.chatClient.prompt()
 				 .user(promptRequest.prompt())
-				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID)
-						 .param(ChatClientAttributes.TOOL_CALL_ADVISOR_AUTO_REGISTER.getKey(), false))
+				 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, CONVERSATION_ID))
 				 //.advisors(AdvisorParams.toolCallAdvisorAutoRegister(false))
-				 .tools( t-> t
-						.instances(new DateTimeTools())
-						.callbacks(asyncMcpToolCallbackProvider.getToolCallbacks()))	
-				  .stream().content();
-
-		// client.close();
-		return content;
+				 .tools(new DateTimeTools(), asyncMcpToolCallbackProvider.getToolCallbacks())
+				 .stream().content();	
 	}
 	
 	
-
 	/**
 	 * returns streamable http mcp client transport
 	 * 

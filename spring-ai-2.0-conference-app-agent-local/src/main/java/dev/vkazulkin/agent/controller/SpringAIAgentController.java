@@ -126,13 +126,10 @@ public class SpringAIAgentController {
 			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
 			
-			//var toolCallbacks = concatWithStream(syncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
-
-			return this.chatClient.prompt().user(prompt)
-					 .tools( t-> t
-						.instances(new DateTimeTools())
-						.callbacks(syncMcpToolCallbackProvider.getToolCallbacks()))	
-					 .call().content();
+			return this.chatClient.prompt()
+					 .user(prompt)
+					.tools(new DateTimeTools(),syncMcpToolCallbackProvider.getToolCallbacks())
+					.call().content();
 		}
 	}
 
@@ -164,15 +161,10 @@ public class SpringAIAgentController {
 				 */
 				.build();
 
-		//var toolCallbacks = concatWithStream(asyncMcpToolCallbackProvider.getToolCallbacks(), ToolCallbacks.from(new DateTimeTools()));
-		var content = this.chatClient.prompt().user(prompt)
-				 .tools( t-> t
-					   .instances(new DateTimeTools())
-					    .callbacks(asyncMcpToolCallbackProvider.getToolCallbacks()))	
-			     .stream().content();
-
-		// client.close();
-		return content;
+		return this.chatClient.prompt()
+				 .user(prompt)
+				 .tools(new DateTimeTools(), asyncMcpToolCallbackProvider.getToolCallbacks())
+				 .stream().content();	
 	}
 	
 
