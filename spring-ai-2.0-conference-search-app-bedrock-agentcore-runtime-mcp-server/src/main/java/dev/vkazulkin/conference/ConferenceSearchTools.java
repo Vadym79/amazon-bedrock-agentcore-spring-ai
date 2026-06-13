@@ -23,6 +23,7 @@ public class ConferenceSearchTools {
 	private static final Logger logger = LoggerFactory.getLogger(ConferenceSearchTools.class);
 
 	public ConferenceSearchTools(ObjectMapper objectMapper) {
+		logger.info("init conference search tool");		
 		this.conferences= this.getAllConferences(objectMapper).conferences();
 
 	}
