@@ -20,9 +20,9 @@ import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
@@ -63,20 +63,15 @@ public class SpringAIAgentController {
 	
 	@Value("${amazon.bedrock.agentcore.runtime.id}")
 	private String AGENTCORE_RUNTIME_ID;
-	
-	private final String awsRegion;
+
+	private String awsRegion;
 	
 	private final CognitoIdentityProviderClient cognitoClient;
-			
+	
 	private final StsClient stsClient;
-	  	
+	  
 	private final ChatClient chatClient;
 	
-	private static final String SYSTEM_PROMPT="""
-			You'are the agent capable of answering  thequestions about the conferences and talks which match a certain criteria
-			and apply those talks for the conferences.
-			""";
-
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
 	private static final Logger logger = LoggerFactory.getLogger(SpringAIAgentController.class);
@@ -90,12 +85,12 @@ public class SpringAIAgentController {
 		this.chatClient = builder
 				//.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
 				.defaultOptions(options)
-				.defaultSystem(SYSTEM_PROMPT)
+				// .defaultSystem(SYSTEM_PROMPT)
 				.build();
 
 		this.awsRegion=awsRegion;
 		cognitoClient = CognitoIdentityProviderClient.builder().region(Region.of(awsRegion)).build();
-		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();		
+		stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
 	}
 
 	/**
@@ -109,65 +104,66 @@ public class SpringAIAgentController {
 	}
 
 	/**
-	 * GET method which has a prompt as an input parameter and outputs the agent response synchronously
+	 * POST method which has a prompt as an input parameter and outputs the agent response synchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return agent answer
 	 */
-	@GetMapping(value = "/conference-sync", consumes = "text/plain")
-	public String conferenceSearchSync(@RequestParam String prompt) {
-		
+	@PostMapping(value = "/invocations", consumes = { "*/*" })
+	public String invoke(@RequestBody String prompt) {		
 		logger.info("invocations endpoint with prompt: " + prompt);
 		var token = getAuthTokenViaHttpClient();
 		try (var client = McpClient.sync(getMcpClientTransport(token)).build()) {
 			client.initialize();
-			
+		
 			client.listTools().tools().forEach(tool -> logger.info("tool found: " + tool));
 			
 			var syncMcpToolCallbackProvider = SyncMcpToolCallbackProvider.builder().mcpClients(client).build();
-			
-			return this.chatClient.prompt()
-					.user(prompt)
+
+			return this.chatClient.prompt().user(prompt)
 					.tools(new DateTimeTools(),syncMcpToolCallbackProvider.getToolCallbacks())
 					.call().content();
 		}
 	}
 
 	/**
-	 *  GET method which has a prompt as an input parameter and outputs the agent response asynchronously
+	 *  POST method which has a prompt as an input parameter and outputs the agent response asynchronously
 	 * 
 	 * @param prompt - prompt
 	 * @return asynchronous agent answer
 	 */
-	@GetMapping(value = "/conference", consumes = "text/plain")
-	public Flux<String> conferenceSearch(@RequestParam String prompt) {
+	@PostMapping(value = "/invocationss", consumes = { "*/*" })
+	public Flux<String> invocations(@RequestBody String prompt) {
 		logger.info("invocations endpoint with prompt: " + prompt);
-
 		var token = getAuthTokenViaHttpClient();
 		if (token == null) {
 			throw new RuntimeException("can't obtain authorization token");
 		}
 		var client = McpClient.async(getMcpClientTransport(token)).build();
 		client.initialize();
-		
-		client.listTools().block().tools().forEach(tool -> logger.info("tool found: " + tool));
 
+		client.listTools().block().tools().forEach(tool -> logger.info("tool found: " + tool));
+		 
 		var asyncMcpToolCallbackProvider = AsyncMcpToolCallbackProvider.builder().mcpClients(client)
 				/*
-				 * .toolFilter(new McpToolFilter() {
-				 * 
-				 * @Override public boolean test(McpConnectionInfo info, Tool tool) { return
-				 * tool.name().toLowerCase().contains("order"); } })
-				 */
-				.build();
+				 .toolFilter(new McpToolFilter() {				 
+					  @Override public boolean test(McpConnectionInfo info, Tool tool) { 
+				      return tool.name().toLowerCase().contains("Conference_Search_Tool_By_Topic"); 
+			        } 
+				  }
+				 )
+				*/
+			.build();
 
-		return this.chatClient.prompt()
-				 .user(prompt)
-				 .tools(new DateTimeTools(), asyncMcpToolCallbackProvider.getToolCallbacks())
-				 .stream().content();	
+		var content = this.chatClient.prompt().user(prompt)
+				.tools(new DateTimeTools(),asyncMcpToolCallbackProvider.getToolCallbacks())
+				.stream().content();
+
+		// client.close();
+		return content;
 	}
 	
-
+	
 
 	/**
 	 * returns streamable http mcp client transport
@@ -259,7 +255,6 @@ public class SpringAIAgentController {
 	}
 
 	
-	
 	/**
 	 * returns cognito user pool with specific user name
 	 * 
@@ -307,6 +302,7 @@ public class SpringAIAgentController {
 	}
 
 	
+
 	/** returns cognito user pool client type for the given cognito user pool client
 	 * 
 	 * @param userPoolClient- cognito user pool client
@@ -338,6 +334,7 @@ public class SpringAIAgentController {
 			var expiresInSeconds = (Integer) responseMap.get("expires_in");
 			logger.info("token expires in seconds: " + expiresInSeconds);
 			// add handling of the auth token expiration
+
 			return token;
 		}
 	}

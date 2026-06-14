@@ -12,10 +12,10 @@ import software.amazon.awssdk.services.sts.StsClient;
 
 class InvokeRuntimeAgent {
 
-	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_ac_conference_application_runtime-a00QWV3i7t";
+	private static final String AGENT_RUNTIME_ARN="arn:aws:bedrock-agentcore:us-east-1:{AWS_ACCOUNT_ID}:runtime/spring_ai_conference_search_application_runtime-143wvBG40Z";
 	
 	void main() throws Exception {
-	
+
 		var payload =
 				"""
 				{
@@ -32,9 +32,8 @@ class InvokeRuntimeAgent {
 				"Please create a talk with some cool title (max 60 characters long) and description (max 700 characters long) about using Spring AI on Amazon Bedrock AgentCore service. Then provide me with the list of conferences, including their IDs with Java topic happening in 2026 and 2027, with call for papers open today. Finally, for each conference, apply individually for it with the talk just created."
 				}
 				""";
-		
-		
-		
+		*/
+		/*
 		var payload =
 				""" 
 				{
@@ -42,8 +41,7 @@ class InvokeRuntimeAgent {
 				"You recently applied for some conferences for me. Can you provide me with the details?"
 				}
 				""";
-        */
-		
+		*/		
 		var httpClient=ApacheHttpClient.builder()
 			    .connectionTimeout(Duration.ofMinutes(5))
 			    .socketTimeout(Duration.ofMinutes(5))
