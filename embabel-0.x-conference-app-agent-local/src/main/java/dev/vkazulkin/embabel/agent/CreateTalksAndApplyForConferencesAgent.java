@@ -35,7 +35,8 @@ public final class CreateTalksAndApplyForConferencesAgent extends AbstractConfer
 				.withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
 				.createObject("""
 				Create a talk creation request from this user input, extracting the criteria like talk title and description conditions. 
-				Don't include any other information into this request.:
+				Don't include any other information in this request.
+				Here is the user input:
 				%s""".formatted(userInput.getContent()), Domain.TalkCreationRequest.class);
 	}
 	

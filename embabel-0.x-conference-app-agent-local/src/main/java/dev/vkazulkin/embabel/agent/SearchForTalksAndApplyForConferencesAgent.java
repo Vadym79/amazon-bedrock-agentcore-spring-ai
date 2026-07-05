@@ -17,7 +17,8 @@ import dev.vkazulkin.embabel.domain.Domain;
 import dev.vkazulkin.embabel.service.McpToolService;
 import io.modelcontextprotocol.client.McpSyncClient;
 
-@Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , description = "search for the talk(s), search for the conference(s) by the given criteria (all, by the topic, by the date range and by cal lfor papers being open on some date), and apply for them with the found talks")
+@Agent(name=SearchForTalksAndApplyForConferencesAgent.AGENT_NAME , 
+description = "search for the talk(s), search for the conference(s) by the given criteria (all, by the topic, by the date range, and by call for papers being open on some date), and apply for them with the found talks")
 public final class SearchForTalksAndApplyForConferencesAgent extends AbstractConferenceAgent {
 	
 	public static final String AGENT_NAME="SearchForExistingTalksAndApplyForConferencesAgent"; 
@@ -36,8 +37,10 @@ public final class SearchForTalksAndApplyForConferencesAgent extends AbstractCon
 	           //.withDefaultLlm()
 			    .withLlm(LlmOptions.withModel("us.amazon.nova-pro-v1:0"))
 	            .createObject("""
-	                Create a talk search request from this user input, extracting the talk title substring. 
-	                Don't include any other information into the request.:
+	                Create a talk search request from this user input, extracting the optional parameters like talk title substring,
+	                conference start and end date, and whether the call for papers is still open on a certain date. 
+	                Don't include any other information in the request.
+	                Here is the user input:
 	                %s""".formatted(userInput.getContent()), Domain.TalkSearchRequest.class);
 	}	
 
@@ -49,6 +52,6 @@ public final class SearchForTalksAndApplyForConferencesAgent extends AbstractCon
 			.promptRunner(ai)
 			.withPromptContributors(List.of(talkSearchRequest))
 			.withToolGroup(this.getMcpToolGroupByName("get-talks-by-"))
-			.createObject("Search for the talk with the given criteria", Domain.Talks.class);
+			.createObject("Search for the talks with the given criteria", Domain.Talks.class);
 	}	
 }

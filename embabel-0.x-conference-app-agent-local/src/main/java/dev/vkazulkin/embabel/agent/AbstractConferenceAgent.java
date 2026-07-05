@@ -55,7 +55,8 @@ abstract sealed class AbstractConferenceAgent
 				.withLlm(LlmOptions.withModel("us.anthropic.claude-sonnet-4-6"))
 				.createObject("""
 				Create a conference search request from this user input, extracting optional information like conference topic, start and end dates and call for papers still open on the request date.
-				Don't include any other not conference search related information like conference application and talk search details into this request.:
+				Don't include any other not conference search related information like conference application and talk search details into this request.
+				Here is the user input:
 				%s""".formatted(userInput.getContent()), Domain.ConferenceSearchRequest.class);
 	}
 
