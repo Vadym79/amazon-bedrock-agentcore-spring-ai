@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.embabel.agent.api.invocation.AgentInvocation;
 import com.embabel.agent.core.Agent;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.core.ProcessOptions;
@@ -22,25 +23,40 @@ import dev.vkazulkin.embabel.domain.Domain;
 public class EmbabelAgentController {
 
 	private final AgentPlatform agentPlatform;
-	// private final AgentInvocation<Domain.ConferenceApplications> invocation;
+	private final AgentInvocation<Domain.ConferenceApplications> invocation;
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmbabelAgentController.class);
 	private final ProcessOptions processOptions = new ProcessOptions()
 		    .withVerbosity(new Verbosity()
 		    .withShowPrompts(true)
 		    .withShowLlmResponses(true)
+		    .withShowPlanning(true)
 		    .withDebug(true));
 
 
 	public EmbabelAgentController(AgentPlatform agentPlatform) {
 		this.agentPlatform = agentPlatform;
 		
-		/*
 		this.invocation = AgentInvocation
 				.builder(agentPlatform)
 				.options(processOptions)
 				.build(Domain.ConferenceApplications.class);
-		*/
+	}
+	
+	
+	/**
+	 * This may not work, as Embabel select the first agent to execute that achieves goal
+	 * and returns domain object Domain.ConferenceApplications. But we have 2 such agents.
+	 * GET method which has a prompt as an input parameter and outputs the agent response synchronously
+	 * 
+	 * @param prompt - prompt
+	 * @return agent answer
+	 */
+	@GetMapping(value = "/generic", consumes = "text/plain")
+	public Domain.ConferenceApplications genericPrompt(@RequestParam String prompt) {
+		logger.info("genericPrompt invoked with prompt: " + prompt);   
+		var inputs = Map.of("request", new UserInput(prompt));
+	    return this.invocation.run(inputs).last(Domain.ConferenceApplications.class);	
 	}
 	
 	/**
@@ -73,13 +89,13 @@ public class EmbabelAgentController {
 		logger.info("agent platform agents " + this.agentPlatform.agents());
 		
 		var inputs = Map.of("request", new UserInput(prompt));
-		var agent= this.getByName(agentName);
-		var agentProcess=this.agentPlatform.createAgentProcess(agent, processOptions, inputs);
+		var agent = this.getAgentByName(agentName);
+		var agentProcess = this.agentPlatform.createAgentProcess(agent, processOptions, inputs);
 		var completedProcess = agentProcess.run();
 		return completedProcess.last(Domain.ConferenceApplications.class);
 	}
 	
-	private Agent getByName(String agentName) {
+	private Agent getAgentByName(String agentName) {
 	   var optionalAgent= this.agentPlatform.agents()
 			   .stream()
 			   .filter(a -> a.getName().equals(agentName))
