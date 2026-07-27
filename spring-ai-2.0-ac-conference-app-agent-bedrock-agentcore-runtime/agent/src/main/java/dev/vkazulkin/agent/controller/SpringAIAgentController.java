@@ -213,7 +213,7 @@ public class SpringAIAgentController {
 	 * @return asynchronous agent answer
 	 */
 	//@AgentCoreInvocation
-	public Flux<String> invoceAsync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
+	public Flux<String> invokeAsync(PromptRequest promptRequest, AgentCoreContext agentCoreContext) {
 		logger.info("invocations endpoint with prompt: " + promptRequest.prompt());
 		var token = getAuthTokenViaHttpClient();
 		if (token == null) {

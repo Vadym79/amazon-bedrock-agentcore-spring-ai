@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class SpringAIConferenceAppOnAgentCoreRuntimeApplication {
 
-	public static void main(String[] args) {
-			SpringApplication.run(SpringAIConferenceAppOnAgentCoreRuntimeApplication.class, args);
+	public static void main(String[] args) throws NoSuchMethodException {
+	   SpringApplication.run(SpringAIConferenceAppOnAgentCoreRuntimeApplication.class, args);
 	}
 
 	@Bean ToolCallingManager toolCallingManager() {
