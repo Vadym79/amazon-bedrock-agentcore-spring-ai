@@ -26,10 +26,10 @@ public class RuntimeWithMCPStack extends Stack {
         var role= Role.fromRoleArn(this,"roleArnForTheAgentCoreRuntimeRole", roleArnForTheAgentCoreRuntime);
      
         // Create runtime using the built image
-        var runtime = Runtime.Builder.create(this, "MCPRuntime-125")
+        var runtime = Runtime.Builder.create(this, "HTTPRuntime-125")
                 .runtimeName(appName.replace("-", "_")+ "_runtime")
                 .authorizerConfiguration(RuntimeAuthorizerConfiguration.usingIAM())
-                .description("AgenCore Runtime with MCP protocol for running conference app")
+                .description("AgenCore Runtime with HTTP protocol for running conference app")
                 .protocolConfiguration(ProtocolType.HTTP)
                 .agentRuntimeArtifact(agentRuntimeArtifact)
                 .executionRole(role)
