@@ -1,4 +1,4 @@
-# Embabel Conference Application Agent using 1.x GA version
+# Embabel Conference Application Agent using 1.0.x version which supports Spring Boot 3.x and Spring AI 1.x versions
 
 A Spring Boot application that uses AI agents powered by AWS Bedrock and the Embabel Agent framework to automate conference talk management and applications. The application integrates with Model Context Protocol (MCP) servers to search for talks, create new talks, find conferences, and submit conference applications.
 

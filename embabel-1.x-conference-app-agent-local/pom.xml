@@ -13,7 +13,7 @@
 	<artifactId>embabel-1.x-conference-app-agent-local</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>embabel-conference-app-agent-demo</name>
-	<description>Embabel 0.x Conference App MCP local</description> 
+	<description>Embabel 1.0.x Conference App MCP local</description> 
 	<url />
 	<licenses>
 		<license />
