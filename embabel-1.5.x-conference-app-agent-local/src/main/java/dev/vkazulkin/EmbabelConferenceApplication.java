@@ -17,8 +17,6 @@ import io.modelcontextprotocol.client.McpSyncClient;
 
 import tools.jackson.databind.json.JsonMapper;
 
-
-
 @SpringBootApplication
 @EnableConfigurationProperties(ConferenceConfig.class)
 public class EmbabelConferenceApplication {
