@@ -5,8 +5,10 @@ import java.util.List;
 
 import dev.vkazulkin.ConventionalDefaults;
 import software.amazon.awscdk.CfnOutput;
+import software.amazon.awscdk.Names;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.UniqueResourceNameOptions;
 import software.amazon.awscdk.services.cognito.AuthFlow;
 import software.amazon.awscdk.services.cognito.CognitoDomainOptions;
 import software.amazon.awscdk.services.cognito.OAuthFlows;
@@ -45,16 +47,20 @@ public class UserClientPoolStack extends Stack {
            
         var userPoolId= userPool.getUserPoolId();
         
-        // doesn't work, because userPoolId is a token at the cdk synth time. And it fails at synth time with
-        //Caused by: java.lang.RuntimeException: DomainPrefixCognitoDomainContain: domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens
-        // see the created issues https://github.com/aws/aws-cdk/issues/37514
-        /* 
+        var options = new UniqueResourceNameOptions.Builder()
+        		.maxLength(63)
+        		.separator("-")
+        		.build();
+        
+        var domainPrefix=Names.uniqueResourceName(userPool, options).toLowerCase();
+        System.out.println("domain prefix "+domainPrefix);
+        
         userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
-           .cognitoDomain(CognitoDomainOptions.builder()
-        		   .domainPrefix(userPoolId.replace("_", "").toLowerCase()).build()).build());
-        */
-              
-                
+                .cognitoDomain(CognitoDomainOptions.builder()
+                .domainPrefix(domainPrefix).build())
+                .build());
+ 
+        
         COGNITO_DISCOVERY_URL = "https://cognito-idp."+region+".amazonaws.com/"+userPoolId+"/.well-known/openid-configuration";
               
         userPoolClient=UserPoolClient.Builder.create(this, "UserPoolClientForAgentCoreMCP")
@@ -70,16 +76,7 @@ public class UserClientPoolStack extends Stack {
         		.userPoolClientName(USER_CLIENT_POOL_NAME)
         		.generateSecret(true)		
         		.userPool(userPool).build();
-        
-        
-        var cognitoDomainPrefix=ConventionalDefaults.getContextVariableValue(this, "cognitoDomainPrefix");
-        userPool.addDomain("UserPoolForAgentCoreMCPDomain", UserPoolDomainOptions.builder()
-                .cognitoDomain(CognitoDomainOptions.builder()
-             	      .domainPrefix(cognitoDomainPrefix.replace("_", "").toLowerCase())
-                	  //.domainPrefix(cognitoDomainPrefix)
-             	     .build()).build());
-  
-        
+               
         CfnOutput.Builder.create(this, "CognitoUserPoolIdOutput").value(userPoolId).build();
         CfnOutput.Builder.create(this, "CognitoUserPoolClientIdOutput").value(userPoolClient.getUserPoolClientId()).build();
         //CfnOutput.Builder.create(this, "CognitoUserPoolClientSecretOutput").value(userPoolClient.getUserPoolClientSecret().toString()).build();
